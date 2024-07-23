@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="h-screen mx-2 py-2 bg-[#FAFBFF]">
     <!-- loader -->
     <!-- <div v-if="loading" class="container md:w-[90%] md:mx-auto">
       <div v-for="data in 4" :key="data">

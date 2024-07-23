@@ -161,8 +161,8 @@ export default {
     },
     async branchResolvedFetchTickets() {
       try {
-        const response = await axios.post(
-          "https://g1.gwcindia.in/ticket-api/resolved-tickets.php?branchCode=CAD"
+        const response = await axios.get(
+          "https://g1.gwcindia.in/ticket-api/resolved-tickets.php?branchCode=CAD&createdBy=BRANCH"
         );
 
         // Set branch resolved ticket data
@@ -214,7 +214,7 @@ export default {
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap");
 .roboto-thin {
   font-family: "Roboto", sans-serif;
-  font-weight: 300;
+  font-weight: 400;
 }
 .animate-bounce {
     animation: bounce-in 0.5s ease-out;
@@ -265,28 +265,55 @@ export default {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    perspective: 1000px; /* Perspective for 3D effect */
 }
 
 .flipping-cards {
     display: flex;
     justify-content: space-between;
     width: 210px; /* Adjust based on the number of cards and their width */
+    transform-style: preserve-3d; /* Preserve 3D transformations */
 }
 
 .card {
     width: 30px;
     height: 40px;
-    background-color: #2545d4;
+    background-color: #2545d4; /* Base background color */
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 18px;
     font-weight: bold;
-    border-radius: 4px;
-    backface-visibility: hidden;
-    transform-style: preserve-3d;
-    animation: flip 2s infinite;
+    border-radius: 8px; /* Increased border radius for rounded corners */
+    transform-style: preserve-3d; /* Preserve 3D transformations */
+    animation: flip 2s infinite, color-change 6s ease-in-out infinite;
+    transform-origin: center; /* Center of transformation */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for depth */
+}
+
+@keyframes flip {
+    0%, 100% {
+        transform: rotateY(0deg);
+    }
+    50% {
+        transform: rotateY(180deg);
+    }
+}
+
+@keyframes color-change {
+    0%, 100% {
+        background-color: #2545d4; /* Base color */
+    }
+    25% {
+        background-color: #ff6b6b; /* Red */
+    }
+    50% {
+        background-color: #ffc048; /* Orange */
+    }
+    75% {
+        background-color: #00d084; /* Green */
+    }
 }
 
 .card:nth-child(1) {
@@ -316,13 +343,6 @@ export default {
 .card:nth-child(7) {
     animation-delay: 1.8s;
 }
+/* slideeee */
 
-@keyframes flip {
-    0%, 100% {
-        transform: rotateY(0deg);
-    }
-    50% {
-        transform: rotateY(180deg);
-    }
-}
 </style>

@@ -1,197 +1,192 @@
 <template>
-   <div class="mx-2 bg-[#FAFBFF]">
-          <div class="container mx-auto md:w-[50%]">
-            <div class="space-y-4 ">
-              <div  class="w-full pt-2">
-                    <input
-                v-model="payload.branchcode"
-                type="text"
-                class="py-3 shadow-sm px-4 block w-full border-gray-200 rounded-lg text-sm text-black focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                placeholder="branch code *"
-              />
-              </div>
-               <div  class="w-full">
-                    <input
-                v-model="payload.clientcode"
-                type="text"
-                class="py-3 shadow-sm px-4 text-black block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                placeholder="client code"
-              />
-              </div>
-              <div class="w-full">
-            
-                <button
-                  @click="isCatOpen = !isCatOpen"
-                  type="button"
-                  :class="selectedCategory ? 'text-black' : 'text-gray-400'"
-                  class="w-full py-3 px-4 inline-flex justify-between items-center gap-x-2 text-sm rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+  <div class="mx-2 bg-[#FAFBFF]">
+    <div class="container mx-auto md:w-[50%]">
+      <div class="space-y-4">
+        <div class="w-full pt-2">
+          <input
+            v-model="payload.branchcode"
+            type="text"
+            class="py-3 shadow-sm px-4 block w-full border-gray-200 rounded-lg text-sm text-black focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+            placeholder="branch code *"
+          />
+        </div>
+        <div class="w-full">
+          <input
+            v-model="payload.clientcode"
+            type="text"
+            class="py-3 shadow-sm px-4 text-black block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+            placeholder="client code"
+          />
+        </div>
+        <div class="w-full">
+          <button
+            @click="isCatOpen = !isCatOpen"
+            type="button"
+            :class="selectedCategory ? 'text-black' : 'text-gray-400'"
+            class="w-full py-3 px-4 inline-flex justify-between items-center gap-x-2 text-sm rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+          >
+            <p>
+              {{ selectedCategory ? selectedCategory : "Select category" }}
+            </p>
+
+            <svg
+              class="hs-dropdown-open:rotate-180 size-4"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+
+          <div v-if="isCatOpen" class="relative">
+            <div
+              class="rounded-lg border absolute bg-gray-50 shadow-md z-50 w-full"
+              :class="
+                allCategories && allCategories.length >= 5
+                  ? 'h-[150px] overflow-y-auto'
+                  : null
+              "
+            >
+              <div
+                v-for="(category, index) in allCategories"
+                :key="index"
+                :style="{ zIndex: 100 - index }"
+              >
+                <div
+                  v-if="index != 0 && index != 1"
+                  @click="selectCategory(category)"
+                  class="cursor-pointer text-sm text-gray-800 hover:bg-gray-100 p-2"
                 >
-                  <p>
-                    {{
-                      selectedCategory ? selectedCategory : "Select category"
-                    }}
-                  </p>
-
-                  <svg
-                    class="hs-dropdown-open:rotate-180 size-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="m6 9 6 6 6-6" />
-                  </svg>
-                </button>
-
-                <div v-if="isCatOpen" class="relative">
-                  <div
-                    class="rounded-lg border absolute bg-gray-50 shadow-md z-50 w-full"
-                    :class="
-                      allCategories && allCategories.length >= 5
-                        ? 'h-[150px] overflow-y-auto'
-                        : null
-                    "
-                  >
-                    <div
-                      v-for="(category, index) in allCategories"
-                      :key="index"
-                      :style="{ zIndex: 100 - index }"
-                    >
-                      <div
-                        v-if="index != 0 && index != 1"
-                        @click="selectCategory(category)"
-                        class="cursor-pointer text-sm text-gray-800 hover:bg-gray-100 p-2"
-                      >
-                        {{ category }}
-                      </div>
-                    </div>
-                  </div>
+                  {{ category }}
                 </div>
-              </div>
-
-              <div class="w-full">
-                <button
-                  @click="isSubOpen = !isSubOpen"
-                  type="button"
-                  :class="{
-                    'text-black': selectedSubCategory,
-                    'text-gray-400': !selectedSubCategory,
-                  }"
-                  :disabled="!selectedCategory || !subcategories.length"
-                  class="w-full py-3 px-4 inline-flex justify-between items-center gap-x-2 text-sm rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
-                >
-                  <p>
-                    {{
-                      selectedSubCategory
-                        ? selectedSubCategory
-                        : "Select sub category"
-                    }}
-                  </p>
-
-                  <svg
-                    class="hs-dropdown-open:rotate-180 size-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="m6 9 6 6 6-6" />
-                  </svg>
-                </button>
-                <div v-if="isSubOpen && !isCatOpen" class="relative">
-                  <div
-                    v-if="subcategories && subcategories.length != 0"
-                    class="rounded-lg border absolute bg-gray-50 shadow-md z-50 w-full"
-                    :class="
-                      subcategories && subcategories.length >= 5
-                        ? 'h-[150px] overflow-y-auto'
-                        : null
-                    "
-                  >
-                    <div
-                      v-for="(subcategory, index) in subcategories"
-                      :key="index"
-                      class="cursor-pointer text-sm text-gray-800 hover:bg-gray-100 p-2"
-                      :style="{ zIndex: 100 - index }"
-                      @click="selectSubCategory(subcategory)"
-                    >
-                      {{ subcategory }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <input
-                v-model="payload.subject"
-                type="text"
-                class="py-3 shadow-sm px-4 block w-full border-gray-200 text-black  rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                placeholder="Subject"
-              />
-
-              <textEditor @create-descript="createDescriptText" class="" />
-
-              <div class="flex items-center justify-center w-full">
-                <label>
-                  <div
-                    class="flex gap-1 flex-row items-center justify-center cursor-pointer"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="blue"
-                      class="w-5 h-5"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M15.621 4.379a3 3 0 0 0-4.242 0l-7 7a3 3 0 0 0 4.241 4.243h.001l.497-.5a.75.75 0 0 1 1.064 1.057l-.498.501-.002.002a4.5 4.5 0 0 1-6.364-6.364l7-7a4.5 4.5 0 0 1 6.368 6.36l-3.455 3.553A2.625 2.625 0 1 1 9.52 9.52l3.45-3.451a.75.75 0 1 1 1.061 1.06l-3.45 3.451a1.125 1.125 0 0 0 1.587 1.595l3.454-3.553a3 3 0 0 0 0-4.242Z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-
-                    <div
-                      class="text-xs text-[#2741b6] flex items-center justify-center"
-                    >
-                      Attach Image or Pdf ( Max Size 5mb )
-                    </div>
-                  </div>
-                  <div class="text-xs text-gray-400 text-center py-3">
-                    {{
-                      (selectedFileName && selectedFileName) || "No file chosen"
-                    }}
-                  </div>
-                  <input
-                    id="dropzone-file"
-                    type="file"
-                    class="hidden"
-                    ref="fileInput"
-                    @change="uploadImage"
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                    multiple="false"
-                  />
-                </label>
               </div>
             </div>
           </div>
-          <div class="container md:mx-auto md:w-[50%]">
-         <button
-    @click="createTicket"
-    :disabled="isCreateButtonDisabled"
-    type="button"
-    class="w-full  inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg  text-white "
->
-    <span class="sr-only">Close</span>
-   <a href="#" class="btn btn-white btn-animate">Create Ticket</a>
-</button>
+        </div>
+
+        <div class="w-full">
+          <button
+            @click="isSubOpen = !isSubOpen"
+            type="button"
+            :class="{
+              'text-black': selectedSubCategory,
+              'text-gray-400': !selectedSubCategory,
+            }"
+            :disabled="!selectedCategory || !subcategories.length"
+            class="w-full py-3 px-4 inline-flex justify-between items-center gap-x-2 text-sm rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+          >
+            <p>
+              {{
+                selectedSubCategory
+                  ? selectedSubCategory
+                  : "Select sub category"
+              }}
+            </p>
+
+            <svg
+              class="hs-dropdown-open:rotate-180 size-4"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+          <div v-if="isSubOpen && !isCatOpen" class="relative">
+            <div
+              v-if="subcategories && subcategories.length != 0"
+              class="rounded-lg border absolute bg-gray-50 shadow-md z-50 w-full"
+              :class="
+                subcategories && subcategories.length >= 5
+                  ? 'h-[150px] overflow-y-auto'
+                  : null
+              "
+            >
+              <div
+                v-for="(subcategory, index) in subcategories"
+                :key="index"
+                class="cursor-pointer text-sm text-gray-800 hover:bg-gray-100 p-2"
+                :style="{ zIndex: 100 - index }"
+                @click="selectSubCategory(subcategory)"
+              >
+                {{ subcategory }}
+              </div>
+            </div>
           </div>
+        </div>
+        <input
+          v-model="payload.subject"
+          type="text"
+          class="py-3 shadow-sm px-4 block w-full border-gray-200 text-black rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+          placeholder="Subject"
+        />
+
+        <textEditor @create-descript="createDescriptText" class="" />
+
+        <div class="flex items-center justify-center w-full">
+          <label>
+            <div
+              class="flex gap-1 flex-row items-center justify-center cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="blue"
+                class="w-5 h-5"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M15.621 4.379a3 3 0 0 0-4.242 0l-7 7a3 3 0 0 0 4.241 4.243h.001l.497-.5a.75.75 0 0 1 1.064 1.057l-.498.501-.002.002a4.5 4.5 0 0 1-6.364-6.364l7-7a4.5 4.5 0 0 1 6.368 6.36l-3.455 3.553A2.625 2.625 0 1 1 9.52 9.52l3.45-3.451a.75.75 0 1 1 1.061 1.06l-3.45 3.451a1.125 1.125 0 0 0 1.587 1.595l3.454-3.553a3 3 0 0 0 0-4.242Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+
+              <div
+                class="text-xs text-[#2741b6] flex items-center justify-center"
+              >
+                Attach Image or Pdf ( Max Size 5mb )
+              </div>
+            </div>
+            <div class="text-xs text-gray-400 text-center py-3">
+              {{ (selectedFileName && selectedFileName) || "No file chosen" }}
+            </div>
+            <input
+              id="dropzone-file"
+              type="file"
+              class="hidden"
+              ref="fileInput"
+              @change="uploadImage"
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+              multiple="false"
+            />
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="container md:mx-auto md:w-[50%]">
+      <button
+        @click="createTicket"
+        :disabled="isCreateButtonDisabled"
+        type="button"
+        class="w-full inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg text-white"
+      >
+        <span class="sr-only">Close</span>
+        <a href="#" class="btn btn-white btn-animate">Create Ticket</a>
+      </button>
+    </div>
     <div
       v-if="opencreated"
       class="main-modal fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster"
@@ -301,8 +296,7 @@
         </div>
       </div>
     </div>
-
-          </div>
+  </div>
 </template>
 <script lang="ts">
 import axios from "axios";
@@ -310,8 +304,8 @@ export default {
   data() {
     return {
       payload: {
-        branchcode:"",
-        clientcode:"",
+        branchcode: "",
+        clientcode: "",
         subject: "",
         text: "",
         department: "",
@@ -325,8 +319,8 @@ export default {
       selectedFileName: null,
       isCatOpen: false,
       isSubOpen: false,
-     
-   loading:false,
+
+      loading: false,
       selectedCategory: null,
       file: null,
       selectedSubCategory: null,
@@ -351,14 +345,11 @@ export default {
   },
   methods: {
     goToHome() {
-      debugger
-      this.$emit("go-to-home",this.tickets);
-        this.loading=false;
-        this.opencreated=false
-      },
-     
-
-    
+      debugger;
+      this.$emit("go-to-home", this.tickets);
+      this.loading = false;
+      this.opencreated = false;
+    },
 
     refreshPage() {
       window.location.reload();
@@ -391,16 +382,16 @@ export default {
       selectedFileName: any;
       departmentIndex: any;
     }) {
-      debugger
+      debugger;
       this.loader = true;
       const formData = new FormData();
       formData.append("department", this.departmentIndex);
       formData.append("subject", this.payload.subject);
       formData.append("text", this.payload.text);
-formData.append("subCat",this.selectedSubCategory);
-formData.append("branchcode", this.payload.branchcode);
-formData.append("clientcode", this.payload.clientcode);
-formData.append("createdBy", "BRANCH");
+      formData.append("subCat", this.selectedSubCategory);
+      formData.append("branchcode", this.payload.branchcode);
+      formData.append("clientcode", this.payload.clientcode);
+      formData.append("createdBy", "BRANCH");
       // const clientCode = localStorage.getItem("clientcode");
       // if (clientCode) {
       //   formData.append("clientcode", clientCode);
@@ -414,30 +405,25 @@ formData.append("createdBy", "BRANCH");
           "https://g1.gwcindia.in/ticket-api/create-ticket.php",
           formData
         );
-         console.log("hello2")
+        console.log("hello2");
         this.statusData = response.data;
-        console.log(this.statusData,
-        "statusData"
-        )
-this.fetchTickets()
-   this.loader = false;
-   this.loading=true;
- 
-
+        console.log(this.statusData, "statusData");
+        this.fetchTickets();
+        this.loader = false;
+        this.loading = true;
       } catch (error) {
         this.statusData = error;
       } finally {
-     
       }
     },
-     async fetchTickets(this: {
+    async fetchTickets(this: {
       openStatus: boolean;
       emailId: any;
       tickets: any;
       loading: boolean;
       $emit: Function;
     }) {
-  this.openStatus=true;
+      this.openStatus = true;
 
       this.emailId = localStorage.getItem("clientemail");
       const formData = new FormData();
@@ -449,15 +435,14 @@ this.fetchTickets()
           formData
         );
         this.tickets = response.data.data;
-     
-        console.log("success")
+
+        console.log("success");
       } catch (error) {
         error.message || "An error occurred";
       } finally {
-        
       }
     },
-      
+
     readFileAsBase64(this: { attachment: any }, file: any) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -517,8 +502,8 @@ this.fetchTickets()
         payload: any;
         selectedSubCategory: any;
         departmentIndex: any;
-        allDepartMentData:any,
-        subcategories:any
+        allDepartMentData: any;
+        subcategories: any;
       },
       data: any
     ) {
@@ -531,9 +516,11 @@ this.fetchTickets()
         (obj: any) => Object.keys(obj)[0] === this.selectedCategory
       );
 
-      const selectedDepartment = this.allDepartMentData.find((department:any) => {
-        return Object.keys(department)[0] === data;
-      });
+      const selectedDepartment = this.allDepartMentData.find(
+        (department: any) => {
+          return Object.keys(department)[0] === data;
+        }
+      );
 
       if (selectedDepartment) {
         this.subcategories = Object.values(selectedDepartment)[0];
@@ -541,88 +528,89 @@ this.fetchTickets()
         console.log("Selected category not found in the department array:<<<");
       }
     },
-    selectSubCategory(this:{isSubOpen:boolean,selectedSubCategory:any},sub:any) {
+    selectSubCategory(
+      this: { isSubOpen: boolean; selectedSubCategory: any },
+      sub: any
+    ) {
       this.isSubOpen = false;
       this.selectedSubCategory = sub;
-      console.log(this.selectedSubCategory,"this.selectedSubCategory")
+      console.log(this.selectedSubCategory, "this.selectedSubCategory");
     },
     createDescriptText(this: { payload: any }, text: any) {
       this.payload.text = text;
     },
   },
-
 };
 </script>
 <style scoped>
-
 .btn:link,
 .btn:visited {
-    text-transform: uppercase;
-    text-decoration: none;
+  text-transform: uppercase;
+  text-decoration: none;
 
-    padding: 15px 40px;
-    display: inline-block;
-    border-radius: 10px;
-    transition: all .2s;
-    position: absolute;
-    width: 45%;
-    background-color:#3f5bd8;
-    color:white;
+  padding: 15px 40px;
+  display: inline-block;
+  border-radius: 10px;
+  transition: all 0.2s;
+  position: absolute;
+  width: 45%;
+  background-color: #3f5bd8;
+  color: white;
 }
 
 .btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-      background-color:#081d7a;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  background-color: #081d7a;
 }
 
 .btn:active {
-    transform: translateY(-1px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
 .btn-white {
-    background-color: #fff;
-    color: #777;
+  background-color: #fff;
+  color: #777;
 }
 
 .btn::after {
-    content: "";
-    display: inline-block;
-    height: 100%;
-    width: 100%;
-    border-radius: 100px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    transition: all .4s;
+  content: "";
+  display: inline-block;
+  height: 100%;
+  width: 100%;
+  border-radius: 100px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  transition: all 0.4s;
 }
 
 .btn-white::after {
-    background-color: #fff;
+  background-color: #fff;
 }
 
 .btn:hover::after {
-    transform: scaleX(1.4) scaleY(1.6);
-    opacity: 0;
+  transform: scaleX(1.4) scaleY(1.6);
+  opacity: 0;
 }
 
 .btn-animated {
-    animation: moveInBottom 5s ease-out;
-    animation-fill-mode: backwards;
+  animation: moveInBottom 5s ease-out;
+  animation-fill-mode: backwards;
 }
 
 @keyframes moveInBottom {
-    0% {
-        opacity: 0;
-        transform: translateY(30px);
-    }
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
 
-    100% {
-        opacity: 1;
-        transform: translateY(0px);
-    }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
 }
 .animated {
   -webkit-animation-duration: 1s;

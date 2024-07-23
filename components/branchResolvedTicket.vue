@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="h-screen mx-2 py-2 bg-[#FAFBFF]">
     <!-- Display client codes as buttons -->
     <div>
         <div v-if="ticketData.count == 0"><div class="flex justify-center items-center py-10">
@@ -28,8 +28,8 @@
           <div v-for="(ticketNo, index) in groupedTickets[clientCode].tickets" :key="index">
             <div class="bg-white shadow-xl rounded-xl p-4 my-1" @click="ticketClick(clientCode, ticketNo)">
               <div class="flex justify-between">
-                <div>#{{ ticketNo }}</div>
-                <div class="px-4 uppercase text-xs text-center bg-green-200 text-green-700 flex items-center">open</div>
+                <div>#{{ ticketNo.ticketNo}}</div>
+                <div class="px-4 uppercase text-xs text-center bg-green-200 text-green-700 flex items-center">{{ getStatus(ticketNo.status_name) }}</div>
               </div>
             </div>
           </div>
@@ -39,8 +39,7 @@
     </div></div>
        
     </div>
-
-        <div
+  <div
       v-if="showModel"
       class="main-modal fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center"
       style="background: rgba(113 110 110 / 70%)"
@@ -48,101 +47,53 @@
       <div
         class="border shadow-lg modal-container bg-white w-full h-full shadow-lg z-50 overflow-y-auto"
       >
-     <div class="modal-content text-left h-full ">
-   
-         
+        
+       
+          
+              
           <div
             class="flex flex-col bg-[#eeeff4] md:bg-white pointer-events-auto max-w-full max-h-full h-full"
           >
-            <!-- <div class="md:block hidden">
+           
+            <div class="bg-[#F9FAFF]  container md:mx-auto md:w-[90%]">
               <div
-                class="flex gap-8 items-center bg-[#F9FAFF] p-3 fixed top-0 z-10 w-full"
-              >
-                <div class="flex justify-between w-[69%]">
-                  <div class="flex items-center">
-                    <div @click="bactoCard">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        class="w-7 h-7 cursor-pointer"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
-                    </div>
-                    <div class="text-xs font-semibold">
-                      #{{ selectedTicket.number }}
-                    </div>
-                  </div>
-
-                  <div
-                    class="uppercase bg-yellow-200 text-xs px-4 py-2 flex items-center justify-center"
+              class="flex justify-between items-center py-3 px-2 "
+            >
+              <div class="flex items-center">
+                <div @click="bactoCard">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    class="w-7 h-7 cursor-pointer"
                   >
-                    {{ selectedTicket.status.name }}
-                  </div>
+                    <path
+                      fill-rule="evenodd"
+                      d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
                 </div>
-                <div class="w-24">
-                  <button
-                    :disabled="isContentEmpty"
-                    @click="submitData"
-                    type="button"
-                    class="w-full h-10 w-24 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg bg-blue-700 text-white hover:bg-[#2741b6] disabled:opacity-50 disabled:pointer-events-none"
-                  >
-                    Submit
-                  </button>
+                <div class="text-xs font-semibold">
+                  #{{ this.selectedticketNo}} 
                 </div>
               </div>
-            </div> -->
-
-            <div class="bg-[#F9FAFF]  container md:mx-auto md:md:w-[90%]">
-              <div
-                class="flex justify-between items-center py-3 px-2"
-              >
-                <div class="flex items-center">
-                  <div @click="bactoCard">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      class="w-7 h-7 cursor-pointer"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                  </div>
-
-                  <div class="text-sm font-semibold">
-                    #{{ this.selectedticketNo }} 
-                  </div>
-                </div>
-                <div class="md:px-6">
-                  <div
-                    class="uppercase bg-yellow-200 text-xs px-4 py-2 flex items-center justify-center"
-                  >
-                    <!-- {{ selectedTicket.status.name }} -->status
-                  </div>
+              <div class="md:px-6">
+                <div
+                  class="uppercase bg-green-200 text-green-700 text-xs px-4 py-2 flex items-center justify-center"
+                >
+              {{getStatus(this.selectedstatus)}}
                 </div>
               </div>
             </div>
-
-            <div class=" pb-20 md:pb-5">
+            </div>
+            
+            <div class="md:pb-5 pb-20">
               <div class="w-full p-4  bg-[#eeeff4] md:bg-white">
-                <!-- review loader -->
-
-                <div
-                  v-if="loader == true"
-                  class="container md:md:w-[90%] md:mx-auto"
-                >
+                <div v-if="loader == true" class="container md:w-[90%] md:mx-auto">
                   <div v-for="data in 4" :key="data" class="py-2">
                     <div
-                      class="shadow rounded-md p-8 max-w-sm w-full md:max-w-[90%] mx-auto bg-white"
+                      class="shadow rounded-md p-8 max-w-sm w-full mx-auto md:max-w-[90%] bg-white"
                     >
                       <div class="animate-pulse flex space-x-4">
                         <div class="rounded-full bg-slate-200 h-10 w-10"></div>
@@ -164,13 +115,10 @@
                     </div>
                   </div>
                 </div>
-
-                <div class="md:flex md:gap-8 container md:mx-auto md:md:w-[90%]">
+                <div class="md:flex md:gap-8 container md:mx-auto md:w-[90%]">
                   <div v-if="loader == false" class="w-full md:w-[90%]">
-                  
                     <div v-for="(data, i) in selectedTicketsData.data" :key="i">
-                      
-                         <div
+                      <div
                         v-if="i == 0"
                         class="flex flex-col bg-blue-100 shadow-xl rounded-xl p-4 pt-2 md:p-5"
                       >
@@ -190,35 +138,29 @@
                             {{ getDate(data.created_at) }}
                           </div>
                         </div>
-                        <div class="pt-3 text-base font-bold">
-                          <!-- {{ selectedTicket.subject }} -->selectedTicket.subject 
+                        <div class="pt-3 font-bold text-base">
+                          <!-- {{ selectedTicket.subject }} -->
                         </div>
                         <div
                           v-if="data.text"
-                          class="py-1 text-sm"
+                          class="py-2 text-sm"
                           style="line-height: 2"
                           v-html="extractTextWithStyles(data.text)"
                         ></div>
-
                         <div
                           v-if="
                             data &&
                             data.attachments &&
                             data.attachments.length != 0
                           "
-                          @click="viewAttach(data?.attachments)"
                           class="text-sm text-[#0d6efd] font-semibold cursor-pointer"
+                          @click="viewAttach(data.attachments)"
                         >
                           View Attachment
                         </div>
                       </div>
-                     
                     </div>
-                    <!-- 1st index -->
-                    
-
-                    <!-- static reply -->
-                    <div class="pt-2">
+                    <div class="pt-4">
                       <div
                         class="flex flex-col bg-white shadow-xl rounded-xl p-4 md:p-5"
                       >
@@ -248,8 +190,6 @@
                         </div>
                       </div>
                     </div>
-                    <!-- other data -->
-
                     <div
                       v-for="(data, i) in selectedTicketsData.data"
                       :key="i"
@@ -296,6 +236,7 @@
                             {{ getDate(data.created_at) }}
                           </div>
                         </div>
+
                         <div v-if="data.text">
                           <div
                             style="line-height: 3"
@@ -320,61 +261,14 @@
                             data.attachments &&
                             data.attachments.length != 0
                           "
-                          @click="viewAttach(data?.attachments)"
-                          class="text-sm text-[#0d6efd] font-semibold cursor-pointer mt-3"
+                          class="text-sm text-[#0d6efd] font-semibold cursor-pointer"
+                          @click="viewAttach(data.attachments)"
                         >
                           View Attachment
                         </div>
                       </div>
                     </div>
-                    <div class="pt-2">
-                      <openEditor @open-ticket-content="openTicketContent" />
-                    </div>
-
-                    <div class="flex items-center justify-center w-full mt-3">
-                      <label>
-                        <div
-                          class="flex gap-1 flex-row items-center justify-center"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="blue"
-                            class="w-5 h-5"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              d="M15.621 4.379a3 3 0 0 0-4.242 0l-7 7a3 3 0 0 0 4.241 4.243h.001l.497-.5a.75.75 0 0 1 1.064 1.057l-.498.501-.002.002a4.5 4.5 0 0 1-6.364-6.364l7-7a4.5 4.5 0 0 1 6.368 6.36l-3.455 3.553A2.625 2.625 0 1 1 9.52 9.52l3.45-3.451a.75.75 0 1 1 1.061 1.06l-3.45 3.451a1.125 1.125 0 0 0 1.587 1.595l3.454-3.553a3 3 0 0 0 0-4.242Z"
-                              clip-rule="evenodd"
-                            />
-                          </svg>
-
-                          <div
-                            class="text-xs text-[#2741b6] flex items-center justify-center"
-                          >
-                            Attach Image or Pdf ( Max Size 5mb )
-                          </div>
-                        </div>
-                        <div class="text-xs text-gray-400 text-center">
-                          {{
-                            (selectedFileName && selectedFileName) ||
-                            "No file chosen"
-                          }}
-                        </div>
-                        <input
-                          id="dropzone-file"
-                          type="file"
-                          class="hidden"
-                          ref="fileInput"
-                          @change="uploadImageOpen"
-                          accept=".pdf,.jpg,.jpeg,.png"
-                          multiple="false"
-                        />
-                      </label>
-                    </div>
                   </div>
-
-                  <!-- faq -->
                   <div class="md:block hidden w-[40%]">
                     <!-- CARD -->
                     <div
@@ -480,44 +374,73 @@
                     </div>
                   </div>
                 </div>
-
-                <div class="md:block hidden">
+                <div class="md:block hidden mt-6">
                   <div
-                    class="flex justify-end items-center container md:ml-[5%] md:w-[20%]"
+                    class="flex justify-start items-center   container md:w-[20%] md:ml-[5%] "   v-if="this.selectedstatus == 3"
                   >
-                    <button
-                      :disabled="isContentEmpty"
-                      @click="submitData"
+                  <div class="w-full ">
+                     <button
+                   style="width:100%"
+                      @click="openRatings"
                       type="button"
-                      style="width: 100%"
-                      class="py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg bg-blue-700 text-white hover:bg-[#2741b6] disabled:opacity-50 disabled:pointer-events-none"
+                      class="py-3 mr-2  px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg bg-blue-700 text-white hover:bg-[#2741b6] disabled:opacity-50 disabled:pointer-events-none"
                     >
-                      Submit
+                      Ok Thanks
                     </button>
                   </div>
+                   <div class="w-full mx-2">
+                    <button
+                   style="width:100%"
+                    
+                      @click="reOpen"
+                      type="button"
+                      class="py-3 px-4 mx-2 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg bg-blue-700 text-white hover:bg-[#2741b6] disabled:opacity-50 disabled:pointer-events-none"
+                    >
+                      Reopen
+                    </button>
+                   </div>
+                    
+                  </div>
+                  <div  class="flex justify-center items-center container md:md:w-[20%] md:px-[5%] " v-else > <div class="w-full ">
+                     <button
+                   style="width:100%"
+                      @click="openRatings"
+                      type="button"
+                      class="py-3 mr-2  px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg bg-blue-700 text-white hover:bg-[#2741b6] disabled:opacity-50 disabled:pointer-events-none"
+                    >
+                      Ok Thanks
+                    </button>
+                  </div></div>
                 </div>
-            
               </div>
-            </div>
-             
-
-            <div
-              class="md:hidden block flex justify-end items-center gap-x-2 py-3 px-4 bg-white mt-auto sm:fixed sm:bottom-0 sm:z-10 w-full"
+              <div
+              class="md:hidden block flex justify-end items-center gap-x-2 py-3 px-4 bg-white mt-auto fixed bottom-0 z-10 w-full"
             >
               <button
-                :disabled="isContentEmpty"
-                @click="submitData"
+                @click="openRatings"
                 type="button"
                 class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg bg-blue-700 text-white hover:bg-[#2741b6] disabled:opacity-50 disabled:pointer-events-none"
               >
-                Submit
+                Ok Thanks
+              </button>
+              <button
+                v-if="this.selectedstatus == 3"
+                @click="reOpen"
+                type="button"
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg bg-blue-700 text-white hover:bg-[#2741b6] disabled:opacity-50 disabled:pointer-events-none"
+              >
+                Reopen
               </button>
             </div>
-          </div>
+            </div>
          
+            
+            
+          </div>
+          
         </div>
       </div>
-    </div>
+    
         <div
       v-if="openStatus"
       class="main-modal fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster"
@@ -570,7 +493,7 @@
               successfully created new message!
             </div>
             <div class="flex justify-center p-2 font-bold">
-              <!-- <div>#{{ selectedTicketNo }}</div> -->1234
+              <div>#{{ selectedTicketNo }}</div>
             </div>
 
             <p class="text-center p-4">
@@ -588,6 +511,209 @@
             </div>
           </div>
          
+        </div>
+      </div>
+    </div>
+    <div
+      v-if="ratingOpen"
+      class="main-modal fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster"
+      style="background: rgba(0, 0, 0, 0.7)"
+    >
+      <div
+        class="border shadow-lg modal-container bg-white w-11/12 mx-auto rounded-xl shadow-lg z-50 overflow-y-auto"
+      >
+        <div class="modal-content py-4 text-left px-6 h-full">
+          <div>
+            <div
+              class="flex justify-end items-center"
+              @click="ratingOpen = false"
+            >
+              <button
+                type="button"
+                class="flex justify-center items-center size-7 text-sm font-semibold rounded-full text-gray-800 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none"
+              >
+                <span class="sr-only">Close</span>
+                <svg
+                  class="flex-shrink-0 size-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M18 6 6 18"></path>
+                  <path d="m6 6 12 12"></path>
+                </svg>
+              </button>
+            </div>
+            <div class="text-center flex justify-center" style="line-height: 2">
+              <div
+                v-if="
+                  (selectedTicketsData &&
+                    selectedTicketsData.rating &&
+                    selectedTicketsData.rating.rating) == null ||
+                  selectedTicketsData.rating.rating == ''
+                "
+              >
+                Please take a moment to rate your experience with our app. you
+              </div>
+              <div v-else class="text-sm">
+                You selected {{ selectedTicketsData?.rating?.rating }} stars out
+                of 5
+              </div>
+            </div>
+            <div class="flex items-center justify-center py-3">
+              <div class="inline-flex items-center justify-center">
+                <span
+                  v-for="star in stars"
+                  :key="star"
+                  @click="
+                    (selectedTicketsData &&
+                      selectedTicketsData.rating &&
+                      selectedTicketsData.rating.rating == null) ||
+                    selectedTicketsData.rating.rating == ''
+                      ? selectRating(star)
+                      : null
+                  "
+                  @mouseover="hoverRating(star)"
+                  @mouseleave="resetHover"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    :stroke="star <= hover ? 'orange' : 'orange'"
+                    :fill="star <= rating ? 'orange' : 'none'"
+                    class="w-8 h-8 cursor-pointer"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
+                    ></path>
+                  </svg>
+                </span>
+              </div>
+            </div>
+            <div class="w-full flex justify-center py-2">
+              <button
+                :disabled="!rating"
+                type="button"
+                class="py-2 w-24 justify-center inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
+                @click="submitRating(0)"
+                v-if="
+                  selectedTicketsData.rating.rating == null ||
+                  selectedTicketsData.rating.rating == ''
+                "
+              >
+                Rating us
+              </button>
+              <button
+                v-else
+                type="button"
+                class="p-2 w-fit justify-center inline-flex items-center gap-x-2 text-xs font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
+                @click="submitRating(1)"
+              >
+                Thanks for your feedback!
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+     <div
+      v-if="isreopen"
+      class="main-modal fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster"
+      style="background: rgba(0, 0, 0, 0.7)"
+    >
+      <div
+        class="border shadow-lg modal-container bg-white w-11/12 mx-auto rounded-xl shadow-lg z-50 overflow-y-auto"
+      >
+        <div class="modal-content py-4 text-left px-4 h-full">
+          <div>
+            <div
+              class="flex justify-end items-center"
+              @click="isreopen = false"
+            >
+              <button
+                type="button"
+                class="flex justify-center items-center size-7 text-sm font-semibold rounded-full text-gray-800 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none"
+              >
+                <span class="sr-only">Close</span>
+                <svg
+                  class="flex-shrink-0 size-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M18 6 6 18"></path>
+                  <path d="m6 6 12 12"></path>
+                </svg>
+              </button>
+            </div>
+            <div class="pt-4">
+              <openEditor @open-ticket-content="openTicketContent" />
+            </div>
+            <div class="flex items-center justify-center w-full mt-3">
+              <label>
+                <div class="flex gap-1 flex-row items-center justify-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="blue"
+                    class="w-5 h-5"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M15.621 4.379a3 3 0 0 0-4.242 0l-7 7a3 3 0 0 0 4.241 4.243h.001l.497-.5a.75.75 0 0 1 1.064 1.057l-.498.501-.002.002a4.5 4.5 0 0 1-6.364-6.364l7-7a4.5 4.5 0 0 1 6.368 6.36l-3.455 3.553A2.625 2.625 0 1 1 9.52 9.52l3.45-3.451a.75.75 0 1 1 1.061 1.06l-3.45 3.451a1.125 1.125 0 0 0 1.587 1.595l3.454-3.553a3 3 0 0 0 0-4.242Z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+
+                  <div
+                    class="text-xs text-[#2741b6] flex items-center justify-center"
+                  >
+                    Attach Image or Pdf ( Max Size 5mb )
+                  </div>
+                </div>
+                <div class="text-xs text-gray-400 text-center">
+                  {{
+                    (selectedFileName && selectedFileName) || "No file chosen"
+                  }}
+                </div>
+                <input
+                  id="dropzone-file"
+                  type="file"
+                  class="hidden"
+                  ref="fileInput"
+                  @change="uploadImageOpen"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  multiple="false"
+                />
+              </label>
+            </div>
+
+            <div class="flex justify-center items-center gap-x-2 pt-4 px-4">
+              <button
+                :disabled="isContentEmpty"
+                type="button"
+                class="p-2 w-32 justify-center inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
+                @click="closeReopen"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -613,7 +739,50 @@ export default defineComponent({
       showModel:false,
       selectedticketNo:null,
       openStatus:false,
-      openStatus1:false
+      selectedstatus:null,
+        isreopen: false,
+      openStatus1:false,
+      statusArray:[{
+                "id": 4,
+                "name": "In-Progress",
+                "colour": "#ff7700",
+                "auto_close": 0,
+                "order": 2,
+                "created_at": 1668678556,
+                "updated_at": 1678538407,
+                "icon": "<div class=\"sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle\" style=\"background-color: #ff7700; color: #fff; line-height: 1.25rem;\" title=\"In-Progress\">I<\/div>",
+                "icon_without_tooltip": "<div class=\"sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle\" style=\"background-color: #ff7700; color: #fff; line-height: 1.25rem;\">I<\/div>"
+            },{
+                "id": 1,
+                "name": "Open",
+                "colour": "#35a600",
+                "auto_close": 1,
+                "order": 1,
+                "created_at": 1668678556,
+                "updated_at": 1668678556,
+                "icon": "<div class=\"sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle\" style=\"background-color: #35a600; color: #fff; line-height: 1.25rem;\" title=\"Open\">O<\/div>",
+                "icon_without_tooltip": "<div class=\"sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle\" style=\"background-color: #35a600; color: #fff; line-height: 1.25rem;\">O<\/div>"
+            },{
+                "id": 2,
+                "name": "Closed",
+                "colour": "#454545",
+                "auto_close": 0,
+                "order": 4,
+                "created_at": 1668678556,
+                "updated_at": 1668678556,
+                "icon": "<div class=\"sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle\" style=\"background-color: #454545; color: #fff; line-height: 1.25rem;\" title=\"Closed\">C<\/div>",
+                "icon_without_tooltip": "<div class=\"sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle\" style=\"background-color: #454545; color: #fff; line-height: 1.25rem;\">C<\/div>"
+            }, {
+                "id": 3,
+                "name": "Awaiting Reply",
+                "colour": "#1e79a6",
+                "auto_close": 1,
+                "order": 3,
+                "created_at": 1668678556,
+                "updated_at": 1678538407,
+                "icon": "<div class=\"sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle\" style=\"background-color: #1e79a6; color: #fff; line-height: 1.25rem;\" title=\"Awaiting Reply\">A<\/div>",
+                "icon_without_tooltip": "<div class=\"sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle\" style=\"background-color: #1e79a6; color: #fff; line-height: 1.25rem;\">A<\/div>"
+            },]
     };
   },
   mounted() {
@@ -624,11 +793,13 @@ export default defineComponent({
   },
   methods: {
       goBack(this: {
+      openStatus1: boolean;
       openStatus: boolean;
       showModel: boolean;
       fetchTickets: Function;
     }) {
       this.openStatus = false;
+       this.openStatus1 = false;
       this.showModel = false;
       this.fetchTickets();
       document.body.style.overflow = "auto";
@@ -638,6 +809,7 @@ export default defineComponent({
       this.replyTickets();
     },
     async replyTickets(this: {
+      openStatus1: boolean;
       updatedData: any;
       load: boolean;
       selectedticketNo: any;
@@ -684,6 +856,16 @@ export default defineComponent({
        bactoCard(this: { showModel: boolean }) {
       this.showModel = false;
       document.body.style.overflow = "auto";
+    },
+    getStatus(status:number){
+      debugger
+      console.log(this.statusArray)
+  for (let i = 0; i < this.statusArray.length; i++) {
+        if (this.statusArray[i].id == status) {
+            return this.statusArray[i].name;
+        }
+    }
+
     },
      extractTextWithStyles(html: string): string {
       const container = document.createElement("div");
@@ -757,6 +939,18 @@ export default defineComponent({
         .join(" ");
       return DOMPurify.sanitize(extractedText);
     },
+    reOpen(this: { isreopen: boolean }) {
+      this.isreopen = true;
+    },
+    closeReopen(this: {
+      isreopen: boolean;
+      openStatus: boolean;
+      replyTickets: Function;
+    }) {
+      this.isreopen = false;
+      this.openStatus = true;
+      this.replyTickets();
+    },
       viewAttach(this: { openImageFile: boolean; apiImage: any }, data: any) {
       if (data && data[0].upload && data[0].upload.filename) {
         const fileName = data[0].upload.filename.toLowerCase(); // Convert to lowercase for case-insensitive comparison
@@ -772,7 +966,7 @@ export default defineComponent({
       }
       this.apiImage = data[0]?.direct_frontend_url;
     },
-    groupTickets() {
+     groupTickets() {
       this.groupedTickets = {};
 
       // Assuming ticketData.tickets is an array of tickets
@@ -789,12 +983,18 @@ export default defineComponent({
         }
 
         if (!this.groupedTickets[clientCode].tickets.includes(ticket.ticketNo)) {
-          this.groupedTickets[clientCode].tickets.push(ticket.ticketNo);
+           this.groupedTickets[clientCode].tickets.push({
+        ticketNo: ticket.ticketNo,
+        status_name: ticket.ticketStatus_id  // Assuming ticket.status_name exists
+      });
         }
       });
     },
     ticketClick(clientCode: any, ticketNo: any){
-      this.selectedticketNo=ticketNo;
+     debugger
+      this.selectedticketNo=ticketNo.ticketNo;
+      this.selectedstatus=ticketNo.status_name;
+       console.log(this.selectedticketNo, this.selectedstatus,"t test")
       this.showModel=true;
 this.selectedTicketData(clientCode, ticketNo);
     },
@@ -815,6 +1015,7 @@ this.selectedTicketData(clientCode, ticketNo);
 
         if (this.selectedTicketsData) {
           this.rating = this.selectedTicketsData.rating.rating;
+          console.log(this.rating,"this.rating")
         }
     
       } catch (error) {
@@ -825,6 +1026,34 @@ this.selectedTicketData(clientCode, ticketNo);
     },
     toggleClientCode(clientCode: string) {
       this.activeClient = this.activeClient === clientCode ? '' : clientCode;
+    },
+    openRatings(this: { ratingOpen: boolean; ratingData: any }) {
+      debugger
+      this.ratingOpen = true;
+      this.ratingData = {};
+    },
+      openTicketContent(this: { textContent: any }, data: any) {
+      this.textContent = data;
+    },
+     submitRating(
+      this: {
+        ratingOpen: boolean;
+        showModel: boolean;
+        postRatings: Function;
+      },
+      key: number
+    ) {
+      this.ratingOpen = false;
+      this.showModel = false;
+      if (key == 0) {
+        this.postRatings();
+      }
+
+      document.body.style.overflow = "auto";
+    },
+
+    hoverRating(this: { hover: any }, star: number) {
+      this.hover = star;
     },
         getDate(data: any) {
       const date = new Date(data * 1000);

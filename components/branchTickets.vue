@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen">
+<div class="h-screen mx-2 py-2 bg-[#FAFBFF]">
     <!-- Display client codes as buttons -->
     <div>
       <div v-if="ticketData.count == 0"><div class="flex justify-center items-center py-10">
@@ -523,7 +523,7 @@
               successfully created new message!
             </div>
             <div class="flex justify-center p-2 font-bold">
-              <!-- <div>#{{ selectedTicketNo }}</div> -->1234
+              <div>#{{ selectedTicket }}</div>
             </div>
 
             <p class="text-center p-4">
@@ -627,11 +627,13 @@ export default defineComponent({
     return null;
     },
       goBack(this: {
+      openStatus1: boolean;
       openStatus: boolean;
       showModel: boolean;
       fetchTickets: Function;
     }) {
       this.openStatus = false;
+      this.openStatus1 = false;
       this.showModel = false;
       this.fetchTickets();
       document.body.style.overflow = "auto";
@@ -641,6 +643,8 @@ export default defineComponent({
       this.replyTickets();
     },
     async replyTickets(this: {
+      openStatus1: boolean;
+      openStatus: boolean;
       updatedData: any;
       load: boolean;
       selectedticketNo: any;
@@ -807,9 +811,10 @@ this.selectedTicketData(clientCode, ticketNo);
     },
     async selectedTicketData(clientCode: string|Blob, ticketNo: string|Blob) {
       this.loader = true; // Set loader to true before API call
+      console.log(ticketNo,"tnnn")
       try {
         const formData = new FormData();
-        formData.append("ticket_no", ticketNo);
+        formData.append("ticket_no", ticketNo.ticketNo);
         formData.append("clientcode", clientCode);
 
         const response = await axios.post(
@@ -818,8 +823,8 @@ this.selectedTicketData(clientCode, ticketNo);
         );
          
       this.selectedTicketsData = response.data;
-      
-
+       this.selectedTicket=ticketNo.ticketNo;
+console.log(this.selectedTicket,"this.selectedTicket")
         if (this.selectedTicketsData) {
           this.rating = this.selectedTicketsData.rating.rating;
         }
@@ -832,6 +837,9 @@ this.selectedTicketData(clientCode, ticketNo);
     },
     toggleClientCode(clientCode: string) {
       this.activeClient = this.activeClient === clientCode ? '' : clientCode;
+    },
+      openTicketContent(this: { textContent: any }, data: any) {
+      this.textContent = data;
     },
         getDate(data: any) {
       const date = new Date(data * 1000);
