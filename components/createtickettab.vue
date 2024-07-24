@@ -4,7 +4,7 @@
       <div class="space-y-4">
         <div class="w-full pt-2">
           <input
-            v-model="payload.branchcode"
+            v-model="this.branchCode"
             type="text"
             class="py-3 shadow-sm px-4 block w-full border-gray-200 rounded-lg text-sm text-black focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
             placeholder="branch code *"
@@ -15,7 +15,8 @@
             v-model="payload.clientcode"
             type="text"
             class="py-3 shadow-sm px-4 text-black block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-            placeholder="client code"
+            placeholder="Client Code"
+            style="text-transform: uppercase;"
           />
         </div>
         <div class="w-full">
@@ -26,7 +27,7 @@
             class="w-full py-3 px-4 inline-flex justify-between items-center gap-x-2 text-sm rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
           >
             <p>
-              {{ selectedCategory ? selectedCategory : "Select category" }}
+              {{ selectedCategory ? selectedCategory : "Select Category" }}
             </p>
 
             <svg
@@ -86,7 +87,7 @@
               {{
                 selectedSubCategory
                   ? selectedSubCategory
-                  : "Select sub category"
+                  : "Select Sub Category"
               }}
             </p>
 
@@ -178,17 +179,37 @@
     </div>
     <div class="container md:mx-auto md:w-[50%]">
       <button
-        @click="createTicket"
         :disabled="isCreateButtonDisabled"
         type="button"
         class="w-full inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg text-white"
       >
         <span class="sr-only">Close</span>
-        <a href="#" class="btn btn-white btn-animate">Create Ticket</a>
+        <a href="#" class="btn btn-white btn-animate" @click="createTicket"
+          >Create Ticket</a
+        >
       </button>
     </div>
     <div
-      v-if="opencreated"
+      v-if="loader"
+      class="main-modal fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster"
+      style="background: rgba(0, 0, 0, 0.7)"
+    >
+      <div
+        class="border shadow-lg modal-container bg-white w-11/12 mx-auto rounded-xl shadow-lg z-50 overflow-y-auto"
+      >
+        <div class="modal-content py-4 text-left px-6 h-full">
+          <div class="flex justify-center items-center" style="height: 300px">
+            <div class="three-body">
+              <div class="three-body__dot"></div>
+              <div class="three-body__dot"></div>
+              <div class="three-body__dot"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      v-if="loading"
       class="main-modal fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster"
       style="background: rgba(0, 0, 0, 0.7)"
     >
@@ -196,7 +217,7 @@
         class="border shadow-lg modal-container bg-white w-11/12 mx-auto rounded-xl shadow-lg z-50 overflow-y-auto"
       >
         <div class="modal-content py-4 text-left h-full">
-          <div v-if="loading == true">
+          <div>
             <div
               class="flex justify-center"
               :class="statusData && statusData.status == 'ok' ? 'py-4' : 'py-0'"
@@ -281,18 +302,6 @@
               </button>
             </div>
           </div>
-
-          <div
-            v-if="loader == true"
-            class="flex justify-center items-center"
-            style="height: 300px"
-          >
-            <div class="three-body">
-              <div class="three-body__dot"></div>
-              <div class="three-body__dot"></div>
-              <div class="three-body__dot"></div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -319,8 +328,9 @@ export default {
       selectedFileName: null,
       isCatOpen: false,
       isSubOpen: false,
-
+      branchCode: null,
       loading: false,
+      loader: false,
       selectedCategory: null,
       file: null,
       selectedSubCategory: null,
@@ -341,39 +351,38 @@ export default {
     },
   },
   mounted() {
+    const branchcode = localStorage.getItem("branchCode");
+    console.log(branchcode, "initial");
+    this.branchCode = branchcode;
     this.getDeparmentData();
   },
   methods: {
     goToHome() {
       debugger;
-      this.$emit("go-to-home", this.tickets);
       this.loading = false;
-      this.opencreated = false;
+      this.$emit("go-to-home", this.tickets);
     },
 
     refreshPage() {
       window.location.reload();
     },
-    goBackToHome(this: {
-      opencreated: boolean;
-      openCreate: boolean;
-      goToHome: Function;
-      refreshPage: Function;
-    }) {
-      this.opencreated = false;
-      // this.refreshPage();
-      this.goToHome();
-    },
 
-    createTicket(this: { opencreated: boolean; createpayload: Function }) {
-      this.opencreated = true;
+    createTicket(this: {
+      loader: boolean;
+      opencreated: boolean;
+      createpayload: Function;
+    }) {
+      this.loader = true;
       this.createpayload();
     },
     async createpayload(this: {
+      selectedSubCategory: string|Blob;
       loading: boolean;
       opencreated: boolean;
       goToHome(): unknown;
       fetchTickets(): unknown;
+      branchFetchTickets(): unknown;
+      branchResolvedFetchTickets(): unknown;
       payload: any;
       statusData: any;
       stripHTML: any;
@@ -383,19 +392,15 @@ export default {
       departmentIndex: any;
     }) {
       debugger;
-      this.loader = true;
+
       const formData = new FormData();
       formData.append("department", this.departmentIndex);
       formData.append("subject", this.payload.subject);
       formData.append("text", this.payload.text);
       formData.append("subCat", this.selectedSubCategory);
-      formData.append("branchcode", this.payload.branchcode);
+      formData.append("branchCode", this.branchCode);
       formData.append("clientcode", this.payload.clientcode);
       formData.append("createdBy", "BRANCH");
-      // const clientCode = localStorage.getItem("clientcode");
-      // if (clientCode) {
-      //   formData.append("clientcode", clientCode);
-      // }
 
       formData.append("attachment", this.attachment);
       formData.append("filename", this.selectedFileName);
@@ -407,39 +412,47 @@ export default {
         );
         console.log("hello2");
         this.statusData = response.data;
-        console.log(this.statusData, "statusData");
-        this.fetchTickets();
-        this.loader = false;
-        this.loading = true;
+this.departmentIndex=null;
+this.payload.clientcode="";
+this.payload.text="";
+this.payload.subject="";
+this.selectedSubCategory=null;
+
+        this.branchFetchTickets();
       } catch (error) {
         this.statusData = error;
       } finally {
       }
     },
-    async fetchTickets(this: {
-      openStatus: boolean;
-      emailId: any;
-      tickets: any;
-      loading: boolean;
-      $emit: Function;
-    }) {
-      this.openStatus = true;
 
-      this.emailId = localStorage.getItem("clientemail");
-      const formData = new FormData();
-      formData.append("emailId", this.emailId);
-
+    async branchFetchTickets() {
+      const branchcode = localStorage.getItem("branchCode");
       try {
-        const response = await axios.post(
-          "https://g1.gwcindia.in/ticket-api/get-user-all-tickets.php",
-          formData
+        const response = await axios.get(
+          `https://g1.gwcindia.in/ticket-api/open-tickets.php`,
+          {
+            params: {
+              branchCode: branchcode,
+              createdBy: "BRANCH",
+            },
+          }
         );
-        this.tickets = response.data.data;
+        if (response != undefined) {
+          this.tickets = response.data;
 
-        console.log("success");
+          this.loader = false;
+          this.loading = true;
+        }
+        // Set branch ticket data
+
+        console.log(this.tickets, "this.ticketsthis.tickets");
       } catch (error) {
-        error.message || "An error occurred";
+        console.error("Error fetching branch tickets:", error.message);
       } finally {
+        //       setTimeout(() => {
+        //     this.opencreated = false;
+        //        this.loading=false;
+        // }, 2000);
       }
     },
 

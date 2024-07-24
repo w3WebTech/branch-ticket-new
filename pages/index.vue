@@ -1,35 +1,36 @@
 <template>
   <div class=" ">
-    <home/>
+    <home />
   </div>
 </template>
 <script lang="ts">
 export default {
- 
-
   mounted() {
     // Get values from URL query parameters
     const clientCode = this.$route.query.clientcode
-      ? this.$route.query.clientcode 
+      ? this.$route.query.clientcode
       : "GZ10219";
     const clientName = this.$route.query.clientname
-      ? this.$route.query.clientname 
+      ? this.$route.query.clientname
       : "RAJA ESWARAN";
     const clientemail = this.$route.query.clientemail
       ? this.$route.query.clientemail
       : "eswaran@gwcindia.in";
+    const branchCode = this.$route.query.branchcode
+      ? this.$route.query.branchcode
+      : "CAD";
     // Do something with clientCode and clientName
     // this.clientCode = "GZ10219";
     // this.clientName = "RAJA ESWARAN";
     // this.clientemail=   "eswaran@gwcindia.in";
-    localStorage.setItem("clientemail",clientemail);
+    localStorage.setItem("clientemail", clientemail);
     localStorage.setItem("clientname", clientName);
-    localStorage.setItem("clientcode",clientCode);
-
+    localStorage.setItem("clientcode", clientCode);
+    localStorage.setItem("branchCode", branchCode);
     this.$router.push("/home");
-
+    console.log(localStorage.getItem("branchCode"), "branchCode");
     console.log("Client Code:", clientCode);
-    console.log("Client Name:",     localStorage.getItem("clientname"));
+    console.log("Client Name:", localStorage.getItem("clientname"));
 
     console.log("Client Name:", clientemail);
   },
@@ -38,18 +39,15 @@ export default {
       allDepartMentData: null,
       getDepartment: null,
       tickets: [],
-  
+
       error: null,
       emailId: "",
       resolvedTicketsData: [],
       openTicketsData: [],
-      
     };
   },
 
-  methods: {
-   
-  },
+  methods: {},
 };
 </script>
 <style scoped>

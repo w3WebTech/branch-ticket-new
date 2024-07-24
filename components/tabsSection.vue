@@ -1,18 +1,7 @@
 <template>
   <div class="bg-[#FAFBFF] h-screen roboto-thin">
     <div v-if="loading" class="w-full h-screen flex justify-center items-center ">
-<div class="loader-container">
-    <div class="flipping-cards">
-        <div class="card">G</div>
-        <div class="card">O</div>
-        <div class="card">O</div>
-        <div class="card">D</div>
-        <div class="card">W</div>
-        <div class="card">I</div>
-        <div class="card">L</div>
-          <div class="card">L</div>
-    </div>
-</div>
+<loader/>
 
     </div>
     <div v-else>
@@ -148,10 +137,14 @@ export default {
       }
     },
     async branchFetchTickets() {
+       const branchcode = localStorage.getItem("branchCode");
       try {
-        const response = await axios.post(
-          "https://g1.gwcindia.in/ticket-api/open-tickets.php?branchCode=CAD&createdBy=BRANCH"
-        );
+      const response = await axios.get(`https://g1.gwcindia.in/ticket-api/open-tickets.php`, {
+    params: {
+      branchCode: branchcode,
+      createdBy: "BRANCH"
+    }
+  });
 
         // Set branch ticket data
         this.branchTicketData = response.data;
@@ -161,9 +154,14 @@ export default {
     },
     async branchResolvedFetchTickets() {
       try {
-        const response = await axios.get(
-          "https://g1.gwcindia.in/ticket-api/resolved-tickets.php?branchCode=CAD&createdBy=BRANCH"
-        );
+       const branchcode = localStorage.getItem("branchCode");
+
+          const response = await axios.get(`https://g1.gwcindia.in/ticket-api/resolved-tickets.php`, {
+ params: {
+      branchCode: branchcode,
+      createdBy: "BRANCH"
+    }
+  });
 
         // Set branch resolved ticket data
         this.branchTicketDataResolved = response.data;
@@ -178,28 +176,8 @@ export default {
       this.isCreate = true; // Show create ticket form/component
     },
     goBackFunc(ticket) {
-      // Handle going back from any detailed view or form
-      // Update resolved and open ticket data after any changes
-      this.resolvedTickets = ticket
-        .filter(
-          (item) =>
-            item.status.name === "Closed" || item.status.name === "Awaiting Reply"
-        )
-        .map((ticket) => ({ ...ticket }));
-
-      this.openTicketsCount = ticket
-        .filter(
-          (item) =>
-            item.status.name === "Open" || item.status.name === "In-Progress"
-        )
-        .map((ticket) => ({ ...ticket }));
-
-      // Refresh branch ticket and resolved data after changes
-      this.branchFetchTickets();
-      this.branchResolvedFetchTickets();
-
-      // Log ticket data for debugging purposes
-      console.log("Tickets data updated:", ticket);
+      debugger
+     this.branchTicketData=ticket;
 
       // Reset create ticket form visibility and scroll behavior
       this.isCreate = false;

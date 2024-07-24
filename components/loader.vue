@@ -6,8 +6,17 @@
     <div class="pt-3">
       <div class="h-3 bg-slate-300 w-[200px]"></div>
     </div>
-    <div class="flex justify-center gap-4 pt-12">
+    <div class="flex justify-start gap-4 pt-12">
       <div class="">
+        <div class="h-3 bg-slate-300 w-36"></div>
+      </div>
+      <div class="">
+        <div class="h-3 bg-slate-300 w-36"></div>
+      </div>
+       <div class="">
+        <div class="h-3 bg-slate-300 w-36"></div>
+      </div>
+       <div class="">
         <div class="h-3 bg-slate-300 w-36"></div>
       </div>
       <div class="">

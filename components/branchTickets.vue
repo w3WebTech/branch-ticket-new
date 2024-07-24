@@ -17,7 +17,7 @@
         <!-- Panel Header -->
         <div @click="toggleClientCode(clientCode)" class="border-b px-4 py-3 cursor-pointer bg-gray-100">
           <div class="flex justify-between items-center">
-            <div class="text-lg font-semibold">{{ clientCode }}</div>
+            <div class="text-sm font-semibold">{{ clientCode }}</div>
             <svg :class="{'transform rotate-180': activeClient === clientCode}" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
@@ -28,7 +28,7 @@
         <div v-if="activeClient === clientCode" class="px-4 py-3">
           <div v-for="(ticketNo, index) in groupedTickets[clientCode].tickets" :key="index">
             <div class="bg-white shadow-xl rounded-xl p-4 my-1" @click="ticketClick(clientCode, ticketNo)">
-              <div class="flex justify-between">
+              <div class="flex justify-between text-sm">
                 <div>#{{ ticketNo.ticketNo }}</div>
                 <div class="px-4 uppercase text-xs text-center bg-green-200 text-green-700 flex items-center">{{ getStatus(ticketNo.status_name) }}</div>
               </div>
@@ -147,7 +147,8 @@
                           </div>
                         </div>
                         <div class="pt-3 text-base font-bold">
-                          <!-- {{ selectedTicket.subject }} -->selectedTicket.subject 
+                          <!-- {{ selectedTicket.subject }} -->
+                          {{data.subject}}
                         </div>
                         <div
                           v-if="data.text"
@@ -662,8 +663,9 @@ export default defineComponent({
       const formData = new FormData();
 
       const clientCode = localStorage.getItem("clientcode");
+       const branchcode = localStorage.getItem("branchCode");
       formData.append("clientcode", clientCode);
-  formData.append("branchcode", "Cad");
+  formData.append("branchcode", branchcode);
       formData.append("ticket_no", this.selectedticketNo);
       formData.append("text", this.textContent);
       formData.append("attachment", this.attachment);

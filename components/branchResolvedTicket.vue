@@ -16,7 +16,7 @@
         <!-- Panel Header -->
         <div @click="toggleClientCode(clientCode)" class="border-b px-4 py-3 cursor-pointer bg-gray-100">
           <div class="flex justify-between items-center">
-            <div class="text-lg font-semibold">{{ clientCode }}</div>
+            <div class="text-sm font-semibold">{{ clientCode }}</div>
             <svg :class="{'transform rotate-180': activeClient === clientCode}" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
@@ -27,7 +27,7 @@
         <div v-if="activeClient === clientCode" class="px-4 py-3">
           <div v-for="(ticketNo, index) in groupedTickets[clientCode].tickets" :key="index">
             <div class="bg-white shadow-xl rounded-xl p-4 my-1" @click="ticketClick(clientCode, ticketNo)">
-              <div class="flex justify-between">
+              <div class="flex text-sm justify-between">
                 <div>#{{ ticketNo.ticketNo}}</div>
                 <div class="px-4 uppercase text-xs text-center bg-green-200 text-green-700 flex items-center">{{ getStatus(ticketNo.status_name) }}</div>
               </div>
@@ -140,6 +140,7 @@
                         </div>
                         <div class="pt-3 font-bold text-base">
                           <!-- {{ selectedTicket.subject }} -->
+                          {{data.subject}}
                         </div>
                         <div
                           v-if="data.text"
@@ -374,7 +375,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="md:block hidden mt-6">
+                <!-- <div class="md:block hidden mt-6">
                   <div
                     class="flex justify-start items-center   container md:w-[20%] md:ml-[5%] "   v-if="this.selectedstatus == 3"
                   >
@@ -411,27 +412,9 @@
                       Ok Thanks
                     </button>
                   </div></div>
-                </div>
+                </div> -->
               </div>
-              <div
-              class="md:hidden block flex justify-end items-center gap-x-2 py-3 px-4 bg-white mt-auto fixed bottom-0 z-10 w-full"
-            >
-              <button
-                @click="openRatings"
-                type="button"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg bg-blue-700 text-white hover:bg-[#2741b6] disabled:opacity-50 disabled:pointer-events-none"
-              >
-                Ok Thanks
-              </button>
-              <button
-                v-if="this.selectedstatus == 3"
-                @click="reOpen"
-                type="button"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg bg-blue-700 text-white hover:bg-[#2741b6] disabled:opacity-50 disabled:pointer-events-none"
-              >
-                Reopen
-              </button>
-            </div>
+            
             </div>
          
             
@@ -550,22 +533,7 @@
                 </svg>
               </button>
             </div>
-            <div class="text-center flex justify-center" style="line-height: 2">
-              <div
-                v-if="
-                  (selectedTicketsData &&
-                    selectedTicketsData.rating &&
-                    selectedTicketsData.rating.rating) == null ||
-                  selectedTicketsData.rating.rating == ''
-                "
-              >
-                Please take a moment to rate your experience with our app. you
-              </div>
-              <div v-else class="text-sm">
-                You selected {{ selectedTicketsData?.rating?.rating }} stars out
-                of 5
-              </div>
-            </div>
+         
             <div class="flex items-center justify-center py-3">
               <div class="inline-flex items-center justify-center">
                 <span
@@ -792,6 +760,7 @@ export default defineComponent({
     }
   },
   methods: {
+ 
       goBack(this: {
       openStatus1: boolean;
       openStatus: boolean;
@@ -827,8 +796,9 @@ export default defineComponent({
       const formData = new FormData();
 
       const clientCode = localStorage.getItem("clientcode");
+        const branchcode = localStorage.getItem("branchCode");
       formData.append("clientcode", clientCode);
-  formData.append("branchcode", "Cad");
+  formData.append("branchcode", branchcode);
       formData.append("ticket_no", this.selectedticketNo);
       formData.append("text", this.textContent);
       formData.append("attachment", this.attachment);
@@ -1002,7 +972,7 @@ this.selectedTicketData(clientCode, ticketNo);
       this.loader = true; // Set loader to true before API call
       try {
         const formData = new FormData();
-        formData.append("ticket_no", ticketNo);
+        formData.append("ticket_no", ticketNo.ticketNo);
         formData.append("clientcode", clientCode);
 
         const response = await axios.post(
