@@ -259,7 +259,8 @@
                   : null
               "
             >
-              {{ statusData && statusData.message && statusData.message }}
+          
+              {{ statusData && statusData.message && statusData.message == 'Processing ..' ? "Invalid Data" : statusData.message}}
             </div>
             <div
               v-if="
