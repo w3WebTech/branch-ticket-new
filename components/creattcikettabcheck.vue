@@ -436,7 +436,8 @@ this.departmentIndex=null;
       };
 this.selectedSubCategory=null;
 this.selectedCategory=null;
-        
+            this.loader = false;
+          this.loading = true;
       } catch (error) {
         this.statusData = error;
       } finally {
