@@ -2,15 +2,15 @@
   <div class="mx-2 bg-[#FAFBFF]">
     <div class="container mx-auto md:w-[50%]">
       <div class="space-y-4">
-        <div class="w-full pt-2">
+        <button class="w-full pt-2">
           <input
             v-model="this.branchCode"
             type="text"
             class="py-3 shadow-sm px-4 block w-full border-gray-200 rounded-lg text-sm text-black focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
             placeholder="branch code *"
           />
-        </div>
-        <div class="w-full">
+        </button >
+        <button class="w-full">
           <input
             v-model="payload.clientcode"
             type="text"
@@ -18,7 +18,7 @@
             placeholder="Client Code"
             style="text-transform: uppercase;"
           />
-        </div>
+        </button>
         <div class="w-full">
           <button
             @click="isCatOpen = !isCatOpen"
@@ -128,15 +128,21 @@
             </div>
           </div>
         </div>
+          <div class="w-full">
+        <button class="w-full">
         <input
           v-model="payload.subject"
           type="text"
           class="py-3 shadow-sm px-4 block w-full border-gray-200 text-black rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
           placeholder="Subject"
         />
-
+</button>
+          </div>
+            <div class="w-full">
+<button class="w-full ">
         <textEditor @create-descript="createDescriptText" class="" />
-
+</button>
+            </div>
         <div class="flex items-center justify-center w-full">
           <label>
             <div
@@ -178,16 +184,22 @@
       </div>
     </div>
     <div class="container md:mx-auto md:w-[50%]">
-      <button
-        :disabled="isCreateButtonDisabled"
-        type="button"
-        class="w-full inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg text-white"
-      >
-        <span class="sr-only">Close</span>
-        <a href="#" class="btn btn-white btn-animate" @click="createTicket"
-          >Create Ticket</a
-        >
-      </button>
+
+
+<button
+  :disabled="isCreateButtonDisabled"
+  type="button"
+  class="w-full py-2 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full 
+         border border-gray-200 bg-blue-600 text-white hover:bg-blue-700 
+         disabled:border-blue-500 disabled:text-blue-500 disabled:cursor-not-allowed disabled:bg-white 
+         disabled:bg-opacity-20 disabled:border-opacity-50 disabled:text-opacity-50
+         transition-transform duration-300 ease-in-out transform hover:scale-105
+         active:scale-95 disabled:opacity-50 disabled:animate-pulse"
+  @click="createTicket"
+>
+  <span class="sr-only">Create Ticket</span>
+  Create Ticket
+</button>
     </div>
     <div
       v-if="loader"
@@ -260,7 +272,7 @@
               "
             >
           
-              {{ statusData && statusData.message && statusData.message == 'Processing ..' ? "Invalid Data" : statusData.message}}
+              {{ statusData && statusData.message && statusData.message == 'Processing ..' ? "Invalid Clientcode" : statusData.message}}
             </div>
             <div
               v-if="
@@ -342,15 +354,13 @@ export default {
     };
   },
   computed: {
-    isCreateButtonDisabled(this: { payload: any }) {
-      for (const key in this.payload) {
-        if (!this.payload[key]) {
-          return true;
-        }
-      }
-      return false;
-    },
-  },
+isCreateButtonDisabled() {
+      // Check if any of the fields are empty
+      return !this.payload ||
+             !this.payload.clientcode ||
+             !this.payload.subject ||
+             !this.payload.text || !this.departmentIndex || !this.selectedSubCategory;
+    },},
   mounted() {
     const branchcode = localStorage.getItem("branchCode");
     console.log(branchcode, "initial");
@@ -377,7 +387,10 @@ export default {
       this.createpayload();
     },
     async createpayload(this: {
-      selectedSubCategory: string|Blob;
+      branchCode(arg0: string, branchCode: any): unknown;
+      selectedCategory: null;
+      
+      selectedSubCategory: any;
       loading: boolean;
       opencreated: boolean;
       goToHome(): unknown;
@@ -414,11 +427,15 @@ export default {
         console.log("hello2");
         this.statusData = response.data;
 this.departmentIndex=null;
-this.payload.clientcode="";
-this.payload.text="";
-this.payload.subject="";
+ this.payload= {
+        branchcode: "",
+        clientcode: "",
+        subject: "",
+        text: "",
+        department: "",
+      };
 this.selectedSubCategory=null;
-
+this.selectedCategory=null;
         this.branchFetchTickets();
       } catch (error) {
         this.statusData = error;
@@ -557,64 +574,52 @@ this.selectedSubCategory=null;
 };
 </script>
 <style scoped>
-.btn:link,
-.btn:visited {
-  text-transform: uppercase;
-  text-decoration: none;
-
-  padding: 15px 40px;
-  display: inline-block;
-  border-radius: 10px;
-  transition: all 0.2s;
-  position: absolute;
-  width: 45%;
-  background-color: #3f5bd8;
-  color: white;
+/* Keyframes for hover animation */
+@keyframes hoverScale {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.05);
+  }
 }
 
-.btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  background-color: #081d7a;
+/* Keyframes for click animation */
+@keyframes clickScale {
+  from {
+    transform: scale(1.05);
+  }
+  to {
+    transform: scale(1);
+  }
 }
 
-.btn:active {
-  transform: translateY(-1px);
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+/* Hover effect */
+button:hover {
+  animation: hoverScale 0.3s forwards;
 }
 
-.btn-white {
-  background-color: #fff;
-  color: #777;
+/* Click effect */
+button:active {
+  animation: clickScale 0.2s forwards;
 }
 
-.btn::after {
-  content: "";
-  display: inline-block;
-  height: 100%;
-  width: 100%;
-  border-radius: 100px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
-  transition: all 0.4s;
+/* Pulsing effect for disabled state */
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
 }
 
-.btn-white::after {
-  background-color: #fff;
+button:disabled {
+  animation: pulse 1.5s infinite;
 }
-
-.btn:hover::after {
-  transform: scaleX(1.4) scaleY(1.6);
-  opacity: 0;
-}
-
-.btn-animated {
-  animation: moveInBottom 5s ease-out;
-  animation-fill-mode: backwards;
-}
-
 @keyframes moveInBottom {
   0% {
     opacity: 0;
@@ -756,6 +761,37 @@ this.selectedSubCategory=null;
     transform: translateY(-66%) scale(0.65);
     opacity: 0.8;
   }
+}
+@keyframes hoverGrow {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+/* Animation for disabled pulse effect */
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+/* Apply hover effect on hover */
+button:hover {
+  animation: hoverGrow 0.3s forwards;
+}
+
+/* Apply pulse effect when disabled */
+button:disabled {
+  animation: pulse 1.5s infinite;
 }
 
 @keyframes wobble2 {
