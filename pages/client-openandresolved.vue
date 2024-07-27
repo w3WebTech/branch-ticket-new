@@ -12,10 +12,7 @@
                 <!-- Your existing tab buttons -->
 
                 <!-- Tab 1: Create Ticket -->
-                <div @click="getTabId(3)"
-                    :class="['px-4 py-3 text-sm cursor-pointer whitespace-nowrap', setTab === 3 ? 'border-b-2 border-blue-600 font-bold text-blue-600 animate-bounce' : 'text-blue-600 hover:border-b-2 hover:border-blue-600 hover:font-bold']">
-                    Create Ticket
-                </div>
+               
 
                 <!-- Tab 2: Client Open Tickets -->
                 <div @click="getTabId(1)"

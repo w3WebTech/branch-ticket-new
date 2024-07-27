@@ -38,9 +38,7 @@
         <transition name="slide">
             <div class="pt-[15px] pb-14">
                
-                <div v-if="setTab === 3" class="animate-slide animate-bounce">
-                    <createtickettab @go-to-home="goBackFunc" />
-                </div>
+               
                 <div v-if="setTab === 4" class="animate-slide animate-bounce">
                     <branchTickets :ticketData="branchTicketData" />
                 </div>
