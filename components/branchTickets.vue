@@ -619,13 +619,16 @@ export default defineComponent({
     }
   },
   methods: {
-    getStatus(status:number){
+   getStatus(status:number){
+      debugger
+
+      console.log(this.statusArray)
   for (let i = 0; i < this.statusArray.length; i++) {
-        if (this.statusArray[i].order === status) {
+        if (this.statusArray[i].id == status) {
             return this.statusArray[i].name;
         }
     }
-    return null;
+
     },
       goBack(this: {
       openStatus1: boolean;
@@ -662,7 +665,7 @@ export default defineComponent({
    
       const formData = new FormData();
 
-      const clientCode = localStorage.getItem("clientcode");
+     const clientCode = localStorage.getItem("clientcode");
        const branchcode = localStorage.getItem("branchCode");
       formData.append("clientcode", clientCode);
   formData.append("branchcode", branchcode);

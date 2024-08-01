@@ -9,21 +9,19 @@
        <div class="container md:w-[90%] md:mx-auto bg-[#eeeff4] md:bg-white pt-10">
         <div class="overflow-x-auto">
             <div class="flex space-x-8 px-2">
-                <!-- Your existing tab buttons -->
-
-                <!-- Tab 1: Create Ticket -->
+               
                
 
                 <!-- Tab 2: Client Open Tickets -->
                 <div @click="getTabId(1)"
                     :class="['py-3 text-sm cursor-pointer whitespace-nowrap', setTab === 1 ? 'border-b-2 border-blue-600 font-bold text-blue-600 animate-bounce' : 'text-blue-600 hover:border-b-2 hover:border-blue-600 hover:font-bold']">
-                    Client Open Tickets ({{ openTicketsCount.length }})
+                    Client Open Tickets({{ clientTicketData.count }})
                 </div>
 
                 <!-- Tab 3: Client Resolved Tickets -->
                 <div @click="getTabId(2)"
                     :class="['py-3 text-sm cursor-pointer whitespace-nowrap', setTab === 2 ? 'border-b-2 border-blue-600 font-bold text-blue-600 animate-bounce' : 'text-blue-600 hover:border-b-2 hover:border-blue-600 hover:font-bold']">
-                    Client Resolved Tickets ({{ resolvedTickets.length }})
+                    Client Resolved Tickets  ({{ clientTicketDataResolved.count }})
                 </div>
 
                 <!-- Tab 4: Branch Open Tickets -->
@@ -34,15 +32,13 @@
         <!-- Content Section with Animation -->
         <transition name="slide">
             <div class="pt-[15px] pb-14">
-                <div v-if="setTab === 1" class="animate-slide animate-bounce">
-                    <openTicketsFlow :ticketData="openTicketsCount" />
+                    <div v-if="setTab === 1" class="animate-slide animate-bounce">
+                    <clientTickets :ticketData="clientTicketData" />
                 </div>
                 <div v-if="setTab === 2" class="animate-slide animate-bounce">
-                    <resolvedTicketFlow :ticketData="resolvedTickets" />
+                    <clientResolvedTicket :ticketData="clientTicketDataResolved" />
                 </div>
-                <div v-if="setTab === 3" class="animate-slide animate-bounce">
-                    <createtickettab @go-to-home="goBackFunc" />
-                </div>
+                
               
             </div>
         </transition>
@@ -76,77 +72,52 @@ export default {
   data() {
     return {
       loading: true,
-      openTicketsCount: [],
-      resolvedTickets: [],
-      branchTicketData: { count: 0 }, // Initial empty state for branch ticket data
-      branchTicketDataResolved: { count: 0 }, // Initial empty state for branch resolved ticket data
-      setTab: 3, // Default tab to be shown
+      
+      clientTicketData: { count: 0 }, // Initial empty state for branch ticket data
+      clientTicketDataResolved: { count: 0 }, // Initial empty state for branch resolved ticket data
+      setTab: 1, // Default tab to be shown
       isCreate: false,
       username: null,
       emailId: null,
     };
   },
   async mounted() {
-    await this.fetchTickets(); // Fetch initial ticket data
-
+   
+this.clientFetchTickets();
+this.clientResolvedFetchTickets();
     this.loading = false; // Set loading to false after data is fetched
   },
   methods: {
-    async fetchTickets() {
-      this.emailId = localStorage.getItem("clientemail");
-      this.username = localStorage.getItem("clientname");
-      const formData = new FormData();
-      formData.append("emailId", this.emailId);
-
-      try {
-        const response = await axios.post(
-          "https://g1.gwcindia.in/ticket-api/get-user-all-tickets.php",
-          formData
-        );
-
-        // Filter tickets based on status for open and resolved
-        this.openTicketsCount = response.data.data.filter(
-          (item) =>
-            item.status.name === "Open" || item.status.name === "In-Progress"
-        );
-        this.resolvedTickets = response.data.data.filter(
-          (item) =>
-            item.status.name === "Closed" ||
-            item.status.name === "Awaiting Reply"
-        );
-      } catch (error) {
-        console.error("Error fetching tickets:", error.message);
-      }
-    },
-    async branchFetchTickets() {
+   
+    async clientFetchTickets() {
        const branchcode = localStorage.getItem("branchCode");
       try {
       const response = await axios.get(`https://g1.gwcindia.in/ticket-api/open-tickets.php`, {
     params: {
       branchCode: branchcode,
-      createdBy: "BRANCH"
+      createdBy: "CLIENT"
     }
   });
 
         // Set branch ticket data
-        this.branchTicketData = response.data;
+        this.clientTicketData = response.data;
       } catch (error) {
         console.error("Error fetching branch tickets:", error.message);
       }
     },
-    async branchResolvedFetchTickets() {
+    async clientResolvedFetchTickets() {
       try {
        const branchcode = localStorage.getItem("branchCode");
 
           const response = await axios.get(`https://g1.gwcindia.in/ticket-api/resolved-tickets.php`, {
  params: {
       branchCode: branchcode,
-      createdBy: "BRANCH"
+      createdBy: "CLIENT"
     }
   });
 
         // Set branch resolved ticket data
-        this.branchTicketDataResolved = response.data;
+        this.clientTicketDataResolved = response.data;
       } catch (error) {
         console.error("Error fetching branch resolved tickets:", error.message);
       }

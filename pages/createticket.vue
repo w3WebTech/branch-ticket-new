@@ -29,8 +29,8 @@
         <transition name="slide">
             <div class="pt-[15px] pb-14">
               
-                <div v-if="setTab === 3" class="animate-slide animate-bounce">
-                    <creattcikettabcheck @go-to-home="goBackFunc" />
+            <div v-if="setTab === 3" class="animate-slide animate-bounce">
+                    <createtickettab @go-to-home="goBackFunc" />
                 </div>
               
             </div>
@@ -76,37 +76,12 @@ export default {
     };
   },
   async mounted() {
-    await this.fetchTickets(); // Fetch initial ticket data
+   
 
     this.loading = false; // Set loading to false after data is fetched
   },
   methods: {
-    async fetchTickets() {
-      this.emailId = localStorage.getItem("clientemail");
-      this.username = localStorage.getItem("clientname");
-      const formData = new FormData();
-      formData.append("emailId", this.emailId);
-
-      try {
-        const response = await axios.post(
-          "https://g1.gwcindia.in/ticket-api/get-user-all-tickets.php",
-          formData
-        );
-
-        // Filter tickets based on status for open and resolved
-        this.openTicketsCount = response.data.data.filter(
-          (item) =>
-            item.status.name === "Open" || item.status.name === "In-Progress"
-        );
-        this.resolvedTickets = response.data.data.filter(
-          (item) =>
-            item.status.name === "Closed" ||
-            item.status.name === "Awaiting Reply"
-        );
-      } catch (error) {
-        console.error("Error fetching tickets:", error.message);
-      }
-    },
+    
     async branchFetchTickets() {
        const branchcode = localStorage.getItem("branchCode");
       try {

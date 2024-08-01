@@ -9,15 +9,7 @@
        <div class="container md:w-[90%] md:mx-auto bg-[#eeeff4] md:bg-white pt-10">
         <div class="overflow-x-auto">
             <div class="flex space-x-8 px-2">
-                <!-- Your existing tab buttons -->
-
-                <!-- Tab 1: Create Ticket -->
-                <div @click="getTabId(3)"
-                    :class="['px-4 py-3 text-sm cursor-pointer whitespace-nowrap', setTab === 3 ? 'border-b-2 border-blue-600 font-bold text-blue-600 animate-bounce' : 'text-blue-600 hover:border-b-2 hover:border-blue-600 hover:font-bold']">
-                    Create Ticket
-                </div>
-
-                <!-- Tab 2: Client Open Tickets -->
+           
             
 
                 <!-- Tab 4: Branch Open Tickets -->
@@ -81,7 +73,7 @@ export default {
       resolvedTickets: [],
       branchTicketData: { count: 0 }, // Initial empty state for branch ticket data
       branchTicketDataResolved: { count: 0 }, // Initial empty state for branch resolved ticket data
-      setTab: 3, // Default tab to be shown
+      setTab: 4, // Default tab to be shown
       isCreate: false,
       username: null,
       emailId: null,
@@ -94,32 +86,7 @@ export default {
     this.loading = false; // Set loading to false after data is fetched
   },
   methods: {
-    async fetchTickets() {
-      this.emailId = localStorage.getItem("clientemail");
-      this.username = localStorage.getItem("clientname");
-      const formData = new FormData();
-      formData.append("emailId", this.emailId);
-
-      try {
-        const response = await axios.post(
-          "https://g1.gwcindia.in/ticket-api/get-user-all-tickets.php",
-          formData
-        );
-
-        // Filter tickets based on status for open and resolved
-        this.openTicketsCount = response.data.data.filter(
-          (item) =>
-            item.status.name === "Open" || item.status.name === "In-Progress"
-        );
-        this.resolvedTickets = response.data.data.filter(
-          (item) =>
-            item.status.name === "Closed" ||
-            item.status.name === "Awaiting Reply"
-        );
-      } catch (error) {
-        console.error("Error fetching tickets:", error.message);
-      }
-    },
+   
     async branchFetchTickets() {
        const branchcode = localStorage.getItem("branchCode");
       try {
