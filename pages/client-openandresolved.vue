@@ -82,7 +82,26 @@ export default {
     };
   },
   async mounted() {
-   
+       const clientCode = this.$route.query.clientcode
+      ? this.$route.query.clientcode
+      : "GZ10219";
+    const clientName = this.$route.query.clientname
+      ? this.$route.query.clientname
+      : "RAJA ESWARAN";
+    const clientemail = this.$route.query.clientemail
+      ? this.$route.query.clientemail
+      : "eswaran@gwcindia.in";
+    const branchCode = this.$route.query.branchcode
+      ? this.$route.query.branchcode
+      : "CAD";
+    // Do something with clientCode and clientName
+    // this.clientCode = "GZ10219";
+    // this.clientName = "RAJA ESWARAN";
+    // this.clientemail=   "eswaran@gwcindia.in";
+    localStorage.setItem("clientemail", clientemail);
+    localStorage.setItem("clientname", clientName);
+    localStorage.setItem("clientcode", clientCode);
+    localStorage.setItem("branchCode", branchCode);
 this.clientFetchTickets();
 this.clientResolvedFetchTickets();
     this.loading = false; // Set loading to false after data is fetched
