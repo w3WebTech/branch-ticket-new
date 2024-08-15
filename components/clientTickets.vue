@@ -1,45 +1,86 @@
 <template>
-<div class="h-screen mx-2 py-2 bg-[#FAFBFF]">
+  <div class="h-screen mx-2 py-2 bg-[#FAFBFF]">
     <!-- Display client codes as buttons -->
     <div>
-      <div v-if="ticketData.count == 0"><div class="flex justify-center items-center py-10">
-        <img
-          src="/static/no-data-found.jpeg"
-          class="rounded-lg"
-          alt=""
-          style="height: 300px; width: 300px"
-        />
-      </div>
-      <p class="text-center py-2 text-gray-600">No tickets available</p></div>
-<div v-else>
-    <div v-for="(clientCode, index) in Object.keys(groupedTickets)" :key="index" class="w-[50%] ml-[100px] mb-4">
-      <div class="border rounded-lg overflow-hidden shadow-md">
-        <!-- Panel Header -->
-        <div @click="toggleClientCode(clientCode)" class="border-b px-4 py-3 cursor-pointer bg-gray-100">
-          <div class="flex justify-between items-center">
-            <div class="text-sm font-semibold">{{ clientCode }}</div>
-            <svg :class="{'transform rotate-180': activeClient === clientCode}" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </div>
+      <div v-if="ticketData.count == 0">
+        <div class="flex justify-center items-center py-10">
+          <img
+            src="/static/no-data-found.jpeg"
+            class="rounded-lg"
+            alt=""
+            style="height: 300px; width: 300px"
+          />
         </div>
+        <p class="text-center py-2 text-gray-600">No tickets available</p>
+      </div>
+      <div v-else>
+        <div class="w-[50%] ml-[100px] py-4">
+          <input
+            type="text"
+            v-model="searchQuery"
+            class="appearance-none border-1 border-gray-200 rounded-lg w-full py-3 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-200"
+            placeholder="Search"
+          />
+        </div>
+        <div
+           v-for="(clientCode, index) in filteredClientCodes"
+          :key="index"
+          class="w-[50%] ml-[100px] mb-4"
+        >
+          <div class="border rounded-lg overflow-hidden shadow-md">
+            <!-- Panel Header -->
+            <div
+              @click="toggleClientCode(clientCode)"
+              class="border-b px-4 py-3 cursor-pointer bg-gray-100"
+            >
+              <div class="flex justify-between items-center">
+                <div class="text-sm font-semibold">{{ clientCode }}</div>
+                <svg
+                  :class="{
+                    'transform rotate-180': activeClient === clientCode,
+                  }"
+                  class="w-5 h-5 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  ></path>
+                </svg>
+              </div>
+            </div>
 
-        <!-- Panel Content (Conditional) -->
-        <div v-if="activeClient === clientCode" class="px-4 py-3">
-          <div v-for="(ticketNo, index) in groupedTickets[clientCode].tickets" :key="index">
-            <div class="bg-white shadow-xl rounded-xl p-4 my-1" @click="ticketClick(clientCode, ticketNo)">
-              <div class="flex justify-between text-sm">
-                <div>#{{ ticketNo.ticketNo }}</div>
-                <div class="px-4 uppercase text-xs text-center bg-green-200 text-green-700 flex items-center">{{ getStatus(ticketNo.status_name) }}</div>
+            <!-- Panel Content (Conditional) -->
+            <div v-if="activeClient === clientCode" class="px-4 py-3">
+              <div
+                 v-for="(ticketNo, index) in filteredTickets(clientCode)"
+                :key="index"
+              >
+                <div
+                  class="bg-white shadow-xl rounded-xl p-4 my-1"
+                  @click="ticketClick(clientCode, ticketNo)"
+                >
+                  <div class="flex justify-between text-sm">
+                    <div>#{{ ticketNo.ticketNo }}</div>
+                    <div
+                      class="px-4 uppercase text-xs text-center bg-green-200 text-green-700 flex items-center"
+                    >
+                      {{ getStatus(ticketNo.status_name) }}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-    </div></div>
     </div>
-        <div
+    <div
       v-if="showModel"
       class="main-modal fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center"
       style="background: rgba(113 110 110 / 70%)"
@@ -47,18 +88,12 @@
       <div
         class="border shadow-lg modal-container bg-white w-full h-full shadow-lg z-50 overflow-y-auto"
       >
-     <div class="modal-content text-left h-full ">
-   
-         
+        <div class="modal-content text-left h-full">
           <div
             class="flex flex-col bg-[#eeeff4] md:bg-white pointer-events-auto max-w-full max-h-full h-full"
           >
-            
-
-            <div class="bg-[#F9FAFF]  container md:mx-auto md:md:w-[90%]">
-              <div
-                class="flex justify-between items-center py-3 px-2"
-              >
+            <div class="bg-[#F9FAFF] container md:mx-auto md:md:w-[90%]">
+              <div class="flex justify-between items-center py-3 px-2">
                 <div class="flex items-center">
                   <div @click="bactoCard">
                     <svg
@@ -76,21 +111,23 @@
                   </div>
 
                   <div class="text-sm font-semibold">
-                    #{{ this.selectedticketNo }} 
+                    #{{ this.selectedticketNo }}
                   </div>
                 </div>
                 <div class="md:px-6">
                   <div
                     class="uppercase bg-yellow-200 text-xs px-4 py-2 flex items-center justify-center"
                   >
-                    <!-- {{ selectedTicket.status.name }} -->{{getStatus(this.selectedstatus)}}
+                    <!-- {{ selectedTicket.status.name }} -->{{
+                      getStatus(this.selectedstatus)
+                    }}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class=" pb-20 md:pb-5">
-              <div class="w-full p-4  bg-[#eeeff4] md:bg-white">
+            <div class="pb-20 md:pb-5">
+              <div class="w-full p-4 bg-[#eeeff4] md:bg-white">
                 <!-- review loader -->
 
                 <div
@@ -122,7 +159,9 @@
                   </div>
                 </div>
 
-                <div class="md:flex md:gap-8 container md:mx-auto md:md:w-[90%]">
+                <div
+                  class="md:flex md:gap-8 container md:mx-auto md:md:w-[90%]"
+                >
                   <div v-if="loader == false" class="w-full md:w-[90%]">
                     <!-- 1st index -->
                     <div v-for="(data, i) in selectedTicketsData.data" :key="i">
@@ -148,7 +187,7 @@
                         </div>
                         <div class="pt-3 text-base font-bold">
                           <!-- {{ selectedTicket.subject }} -->
-                          {{data.subject}}
+                          {{ data.subject }}
                         </div>
                         <div
                           v-if="data.text"
@@ -450,10 +489,8 @@
                     </button>
                   </div>
                 </div>
-            
               </div>
             </div>
-             
 
             <div
               class="md:hidden block flex justify-end items-center gap-x-2 py-3 px-4 bg-white mt-auto sm:fixed sm:bottom-0 sm:z-10 w-full"
@@ -468,11 +505,10 @@
               </button>
             </div>
           </div>
-         
         </div>
       </div>
     </div>
-        <div
+    <div
       v-if="openStatus"
       class="main-modal fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster"
       style="background: rgba(0, 0, 0, 0.7)"
@@ -481,12 +517,7 @@
         class="border shadow-lg modal-container bg-white w-11/12 mx-auto rounded-xl shadow-lg z-50 overflow-y-auto"
       >
         <div class="modal-content py-4 text-left px-6 h-full">
-         
-          <div
-          
-            class="flex justify-center items-center"
-            style="height: 300px"
-          >
+          <div class="flex justify-center items-center" style="height: 300px">
             <div class="three-body">
               <div class="three-body__dot"></div>
               <div class="three-body__dot"></div>
@@ -496,7 +527,7 @@
         </div>
       </div>
     </div>
-       <div
+    <div
       v-if="openStatus1"
       class="main-modal fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster"
       style="background: rgba(0, 0, 0, 0.7)"
@@ -505,7 +536,7 @@
         class="border shadow-lg modal-container bg-white w-11/12 mx-auto rounded-xl shadow-lg z-50 overflow-y-auto"
       >
         <div class="modal-content py-4 text-left px-6 h-full">
-          <div >
+          <div>
             <div class="flex justify-center py-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -541,7 +572,6 @@
               </button>
             </div>
           </div>
-         
         </div>
       </div>
     </div>
@@ -549,8 +579,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import axios from 'axios';
+import { defineComponent } from "vue";
+import axios from "axios";
 import DOMPurify from "dompurify";
 export default defineComponent({
   props: {
@@ -558,79 +588,116 @@ export default defineComponent({
   },
   data() {
     return {
-          rating: 0,
+       searchQuery: "",
+      rating: 0,
       groupedTickets: {},
-      activeClient: '',
+      activeClient: "",
       selectedTicketsData: {},
-      loader: true ,
-      selectedTicket:null,
-      showModel:false,
-      selectedticketNo:null,
-      selectedstatus:null,
-      openStatus:false,
-      openStatus1:false,
-      statusArray:[{
-                "id": 4,
-                "name": "In-Progress",
-                "colour": "#ff7700",
-                "auto_close": 0,
-                "order": 2,
-                "created_at": 1668678556,
-                "updated_at": 1678538407,
-                "icon": "<div class=\"sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle\" style=\"background-color: #ff7700; color: #fff; line-height: 1.25rem;\" title=\"In-Progress\">I<\/div>",
-                "icon_without_tooltip": "<div class=\"sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle\" style=\"background-color: #ff7700; color: #fff; line-height: 1.25rem;\">I<\/div>"
-            },{
-                "id": 1,
-                "name": "Open",
-                "colour": "#35a600",
-                "auto_close": 1,
-                "order": 1,
-                "created_at": 1668678556,
-                "updated_at": 1668678556,
-                "icon": "<div class=\"sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle\" style=\"background-color: #35a600; color: #fff; line-height: 1.25rem;\" title=\"Open\">O<\/div>",
-                "icon_without_tooltip": "<div class=\"sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle\" style=\"background-color: #35a600; color: #fff; line-height: 1.25rem;\">O<\/div>"
-            },{
-                "id": 2,
-                "name": "Closed",
-                "colour": "#454545",
-                "auto_close": 0,
-                "order": 4,
-                "created_at": 1668678556,
-                "updated_at": 1668678556,
-                "icon": "<div class=\"sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle\" style=\"background-color: #454545; color: #fff; line-height: 1.25rem;\" title=\"Closed\">C<\/div>",
-                "icon_without_tooltip": "<div class=\"sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle\" style=\"background-color: #454545; color: #fff; line-height: 1.25rem;\">C<\/div>"
-            }, {
-                "id": 3,
-                "name": "Awaiting Reply",
-                "colour": "#1e79a6",
-                "auto_close": 1,
-                "order": 3,
-                "created_at": 1668678556,
-                "updated_at": 1678538407,
-                "icon": "<div class=\"sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle\" style=\"background-color: #1e79a6; color: #fff; line-height: 1.25rem;\" title=\"Awaiting Reply\">A<\/div>",
-                "icon_without_tooltip": "<div class=\"sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle\" style=\"background-color: #1e79a6; color: #fff; line-height: 1.25rem;\">A<\/div>"
-            },]
+      loader: true,
+      selectedTicket: null,
+      showModel: false,
+      selectedticketNo: null,
+      selectedstatus: null,
+      openStatus: false,
+      openStatus1: false,
+      statusArray: [
+        {
+          id: 4,
+          name: "In-Progress",
+          colour: "#ff7700",
+          auto_close: 0,
+          order: 2,
+          created_at: 1668678556,
+          updated_at: 1678538407,
+          icon: '<div class="sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle" style="background-color: #ff7700; color: #fff; line-height: 1.25rem;" title="In-Progress">I</div>',
+          icon_without_tooltip:
+            '<div class="sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle" style="background-color: #ff7700; color: #fff; line-height: 1.25rem;">I</div>',
+        },
+        {
+          id: 1,
+          name: "Open",
+          colour: "#35a600",
+          auto_close: 1,
+          order: 1,
+          created_at: 1668678556,
+          updated_at: 1668678556,
+          icon: '<div class="sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle" style="background-color: #35a600; color: #fff; line-height: 1.25rem;" title="Open">O</div>',
+          icon_without_tooltip:
+            '<div class="sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle" style="background-color: #35a600; color: #fff; line-height: 1.25rem;">O</div>',
+        },
+        {
+          id: 2,
+          name: "Closed",
+          colour: "#454545",
+          auto_close: 0,
+          order: 4,
+          created_at: 1668678556,
+          updated_at: 1668678556,
+          icon: '<div class="sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle" style="background-color: #454545; color: #fff; line-height: 1.25rem;" title="Closed">C</div>',
+          icon_without_tooltip:
+            '<div class="sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle" style="background-color: #454545; color: #fff; line-height: 1.25rem;">C</div>',
+        },
+        {
+          id: 3,
+          name: "Awaiting Reply",
+          colour: "#1e79a6",
+          auto_close: 1,
+          order: 3,
+          created_at: 1668678556,
+          updated_at: 1678538407,
+          icon: '<div class="sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle" style="background-color: #1e79a6; color: #fff; line-height: 1.25rem;" title="Awaiting Reply">A</div>',
+          icon_without_tooltip:
+            '<div class="sp-inline-block sp-h-5 sp-w-5 sp-rounded-full sp-text-xs sp-text-center sp-font-bold sp-align-middle" style="background-color: #1e79a6; color: #fff; line-height: 1.25rem;">A</div>',
+        },
+      ],
     };
   },
+   computed: {
+    filteredClientCodes(): string[] {
+      if (!this.searchQuery) {
+        return Object.keys(this.groupedTickets);
+      }
+      const lowercaseQuery = this.searchQuery.toLowerCase();
+      return Object.keys(this.groupedTickets).filter(
+        (clientCode) =>
+          clientCode.toLowerCase().includes(lowercaseQuery) ||
+          this.groupedTickets[clientCode].tickets.some(
+            (ticket) => ticket.ticketNo.toString().includes(lowercaseQuery)
+          )
+      );
+    },
+  },
   mounted() {
-    console.log('ticketData received:', this.ticketData);
-    if (this.ticketData && this.ticketData.tickets && this.ticketData.tickets.length > 0) {
+    console.log("ticketData received:", this.ticketData);
+    if (
+      this.ticketData &&
+      this.ticketData.tickets &&
+      this.ticketData.tickets.length > 0
+    ) {
       this.groupTickets();
     }
   },
   methods: {
-  getStatus(status:number){
-      debugger
-
-      console.log(this.statusArray)
-  for (let i = 0; i < this.statusArray.length; i++) {
-        if (this.statusArray[i].id == status) {
-            return this.statusArray[i].name;
-        }
-    }
-
+         filteredTickets(clientCode: string): any[] {
+      if (!this.searchQuery) {
+        return this.groupedTickets[clientCode].tickets;
+      }
+      const lowercaseQuery = this.searchQuery.toLowerCase();
+      return this.groupedTickets[clientCode].tickets.filter(
+        (ticket) => ticket.ticketNo.toString().includes(lowercaseQuery)
+      );
     },
-      goBack(this: {
+    getStatus(status: number) {
+      debugger;
+
+      console.log(this.statusArray);
+      for (let i = 0; i < this.statusArray.length; i++) {
+        if (this.statusArray[i].id == status) {
+          return this.statusArray[i].name;
+        }
+      }
+    },
+    goBack(this: {
       openStatus1: boolean;
       openStatus: boolean;
       showModel: boolean;
@@ -642,7 +709,7 @@ export default defineComponent({
       this.fetchTickets();
       document.body.style.overflow = "auto";
     },
-     submitData(this: { openStatus: boolean; replyTickets: Function }) {
+    submitData(this: { openStatus: boolean; replyTickets: Function }) {
       this.openStatus = true;
       this.replyTickets();
     },
@@ -659,18 +726,16 @@ export default defineComponent({
     }) {
       setTimeout(() => {
         this.openStatus = false;
-           this.openStatus1=true;
-      
-    }, 2000);
-   
+        this.openStatus1 = true;
+      }, 2000);
+
       const formData = new FormData();
 
-     
-       const branchcode = localStorage.getItem("branchCode");
-        const clientCode = localStorage.getItem("clientcode");
-    
+      const branchcode = localStorage.getItem("branchCode");
+      const clientCode = localStorage.getItem("clientcode");
+
       formData.append("clientcode", clientCode);
-  formData.append("branchcode", branchcode);
+      formData.append("branchcode", branchcode);
       formData.append("ticket_no", this.selectedticketNo);
       formData.append("text", this.textContent);
       formData.append("attachment", this.attachment);
@@ -686,20 +751,18 @@ export default defineComponent({
           this.selectedFileName = null;
           this.isButtonDisabled = true;
           this.textContent = "";
-          this.openStatus1= false;
-          console.log(this.load,"this.load")
+          this.openStatus1 = false;
+          console.log(this.load, "this.load");
         }
       } catch (error) {
-      
       } finally {
-        
       }
     },
-       bactoCard(this: { showModel: boolean }) {
+    bactoCard(this: { showModel: boolean }) {
       this.showModel = false;
       document.body.style.overflow = "auto";
     },
-     extractTextWithStyles(html: string): string {
+    extractTextWithStyles(html: string): string {
       const container = document.createElement("div");
       container.innerHTML = html;
 
@@ -771,7 +834,7 @@ export default defineComponent({
         .join(" ");
       return DOMPurify.sanitize(extractedText);
     },
-      viewAttach(this: { openImageFile: boolean; apiImage: any }, data: any) {
+    viewAttach(this: { openImageFile: boolean; apiImage: any }, data: any) {
       if (data && data[0].upload && data[0].upload.filename) {
         const fileName = data[0].upload.filename.toLowerCase(); // Convert to lowercase for case-insensitive comparison
         if (fileName.endsWith(".pdf")) {
@@ -790,35 +853,40 @@ export default defineComponent({
       this.groupedTickets = {};
 
       // Assuming ticketData.tickets is an array of tickets
-      this.ticketData.tickets.forEach(ticket => {
+      this.ticketData.tickets.forEach((ticket) => {
         const clientCode = ticket.clientCode;
-        
+
         if (!this.groupedTickets[clientCode]) {
           this.groupedTickets[clientCode] = {
             clientCode: ticket.clientCode,
             emailId: ticket.emailId,
             departmentId: ticket.departmentId,
-            tickets: []
+            tickets: [],
           };
         }
 
-        if (!this.groupedTickets[clientCode].tickets.includes(ticket.ticketNo)) {
-           this.groupedTickets[clientCode].tickets.push({
-        ticketNo: ticket.ticketNo,
-        status_name: ticket.ticketStatus_id  // Assuming ticket.status_name exists
-      });
+        if (
+          !this.groupedTickets[clientCode].tickets.includes(ticket.ticketNo)
+        ) {
+          this.groupedTickets[clientCode].tickets.push({
+            ticketNo: ticket.ticketNo,
+            status_name: ticket.ticketStatus_id, // Assuming ticket.status_name exists
+          });
         }
       });
     },
-    ticketClick(clientCode: any, ticketNo: any){
-      this.selectedticketNo=ticketNo.ticketNo;
-      this.selectedstatus=ticketNo.status_name;
-      this.showModel=true;
-this.selectedTicketData(clientCode, ticketNo);
+    ticketClick(clientCode: any, ticketNo: any) {
+      this.selectedticketNo = ticketNo.ticketNo;
+      this.selectedstatus = ticketNo.status_name;
+      this.showModel = true;
+      this.selectedTicketData(clientCode, ticketNo);
     },
-    async selectedTicketData(clientCode: string|Blob, ticketNo: string|Blob) {
+    async selectedTicketData(
+      clientCode: string | Blob,
+      ticketNo: string | Blob
+    ) {
       this.loader = true; // Set loader to true before API call
-      console.log(ticketNo,"tnnn")
+      console.log(ticketNo, "tnnn");
       try {
         const formData = new FormData();
         formData.append("ticket_no", ticketNo.ticketNo);
@@ -828,14 +896,13 @@ this.selectedTicketData(clientCode, ticketNo);
           "https://g1.gwcindia.in/ticket-api/get-ticket-status-messages.php",
           formData
         );
-         
-      this.selectedTicketsData = response.data;
-       this.selectedTicket=ticketNo.ticketNo;
-console.log(this.selectedTicket,"this.selectedTicket")
+
+        this.selectedTicketsData = response.data;
+        this.selectedTicket = ticketNo.ticketNo;
+        console.log(this.selectedTicket, "this.selectedTicket");
         if (this.selectedTicketsData) {
           this.rating = this.selectedTicketsData.rating.rating;
         }
-    
       } catch (error) {
         console.error("Error fetching ticket messages:", error);
       } finally {
@@ -843,12 +910,12 @@ console.log(this.selectedTicket,"this.selectedTicket")
       }
     },
     toggleClientCode(clientCode: string) {
-      this.activeClient = this.activeClient === clientCode ? '' : clientCode;
+      this.activeClient = this.activeClient === clientCode ? "" : clientCode;
     },
-      openTicketContent(this: { textContent: any }, data: any) {
+    openTicketContent(this: { textContent: any }, data: any) {
       this.textContent = data;
     },
-        getDate(data: any) {
+    getDate(data: any) {
       const date = new Date(data * 1000);
       const day = date.getDate();
       const month = date.getMonth() + 1;
@@ -858,12 +925,10 @@ console.log(this.selectedTicket,"this.selectedTicket")
       const seconds = date.getSeconds();
       const ampm = hours >= 12 ? "PM" : "AM";
       hours = hours % 12 || 12;
-
       const formattedDate = `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
-
       return formattedDate;
     },
-  }
+  },
 });
 </script>
 

@@ -11,7 +11,14 @@
         />
       </div>
       <p class="text-center py-2 text-gray-600">No tickets available</p></div>
-        <div v-else>     <div v-for="(clientCode, index) in Object.keys(groupedTickets)" :key="index" class="w-[50%] ml-[100px] mb-4">
+        <div v-else>   <div class="w-[50%] ml-[100px] py-4">
+          <input
+            type="text"
+            v-model="searchQuery"
+            class="appearance-none border-1 border-gray-200 rounded-lg w-full py-3 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-200"
+            placeholder="Search"
+          />
+        </div>    <div  v-for="(clientCode, index) in filteredClientCodes" :key="index" class="w-[50%] ml-[100px] mb-4">
       <div class="border rounded-lg overflow-hidden shadow-md">
         <!-- Panel Header -->
         <div @click="toggleClientCode(clientCode)" class="border-b px-4 py-3 cursor-pointer bg-gray-100">
@@ -25,7 +32,7 @@
 
         <!-- Panel Content (Conditional) -->
         <div v-if="activeClient === clientCode" class="px-4 py-3">
-          <div v-for="(ticketNo, index) in groupedTickets[clientCode].tickets" :key="index">
+          <div v-for="(ticketNo, index) in filteredTickets(clientCode)" :key="index">
             <div class="bg-white shadow-xl rounded-xl p-4 my-1" @click="ticketClick(clientCode, ticketNo)">
               <div class="flex text-sm justify-between">
                 <div>#{{ ticketNo.ticketNo}}</div>
@@ -698,6 +705,7 @@ export default defineComponent({
   },
   data() {
     return {
+      searchQuery: "",
           rating: 0,
       groupedTickets: {},
       activeClient: '',
@@ -758,6 +766,21 @@ export default defineComponent({
     if (this.ticketData && this.ticketData.tickets && this.ticketData.tickets.length > 0) {
       this.groupTickets();
     }
+  },
+  computed: {
+    filteredClientCodes(): string[] {
+      if (!this.searchQuery) {
+        return Object.keys(this.groupedTickets);
+      }
+      const lowercaseQuery = this.searchQuery.toLowerCase();
+      return Object.keys(this.groupedTickets).filter(
+        (clientCode) =>
+          clientCode.toLowerCase().includes(lowercaseQuery) ||
+          this.groupedTickets[clientCode].tickets.some(
+            (ticket) => ticket.ticketNo.toString().includes(lowercaseQuery)
+          )
+      );
+    },
   },
   methods: {
  
@@ -822,6 +845,15 @@ export default defineComponent({
       } finally {
         
       }
+    },
+        filteredTickets(clientCode: string): any[] {
+      if (!this.searchQuery) {
+        return this.groupedTickets[clientCode].tickets;
+      }
+      const lowercaseQuery = this.searchQuery.toLowerCase();
+      return this.groupedTickets[clientCode].tickets.filter(
+        (ticket) => ticket.ticketNo.toString().includes(lowercaseQuery)
+      );
     },
        bactoCard(this: { showModel: boolean }) {
       this.showModel = false;
