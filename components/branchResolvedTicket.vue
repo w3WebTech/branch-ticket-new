@@ -16,7 +16,7 @@
             type="text"
             v-model="searchQuery"
             class="appearance-none border-1 border-gray-200 rounded-lg w-full py-3 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-200"
-            placeholder="Search"
+            placeholder="Search by Clientcode / Ticket No"
           />
         </div>    <div  v-for="(clientCode, index) in filteredClientCodes" :key="index" class="w-[50%] ml-[100px] mb-4">
       <div class="border rounded-lg overflow-hidden shadow-md">
