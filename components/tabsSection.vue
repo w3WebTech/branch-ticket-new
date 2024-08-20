@@ -147,13 +147,16 @@ export default {
         console.error("Error fetching branch resolved tickets:", error.message);
       }
     },
+   
     async branchFetchTickets() {
        const branchcode = localStorage.getItem("branchCode");
+        
       try {
-      const response = await axios.get(`https://g1.gwcindia.in/ticket-api/open-tickets.php`, {
+      const response = await axios.get(`https://g1.gwcindia.in/ticket-api/br-emp-tickets.php`, {
     params: {
-      branchCode: branchcode,
-      createdBy: "BRANCH"
+      ticket_status: "open",
+      createdBy: this.$route.query.empId ? "EMPLOYEE":"BRANCH-EMP",
+     usercode:this.$route.query.empId ? this.$route.query.empId : branchcode
     }
   });
 
@@ -167,10 +170,11 @@ export default {
       try {
        const branchcode = localStorage.getItem("branchCode");
 
-          const response = await axios.get(`https://g1.gwcindia.in/ticket-api/resolved-tickets.php`, {
+          const response = await axios.get(`https://g1.gwcindia.in/ticket-api/br-emp-tickets.php`, {
  params: {
-      branchCode: branchcode,
-      createdBy: "BRANCH"
+           ticket_status: "closed",
+      createdBy:this.$route.query.empId ? "EMPLOYEE":"BRANCH-EMP",
+      usercode:this.$route.query.empId ? this.$route.query.empId : branchcode
     }
   });
 

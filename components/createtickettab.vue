@@ -12,10 +12,10 @@
         </button >
         <button class="w-full">
           <input
-            v-model="payload.clientcode"
+            v-model="payload.Employeecode"
             type="text"
             class="py-3 shadow-sm px-4 text-black block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-            placeholder="Client Code"
+            placeholder="Employee Code"
             style="text-transform: uppercase;"
           />
         </button>
@@ -272,7 +272,7 @@
               "
             >
           
-              {{ statusData && statusData.message && statusData.message == 'Processing ..' ? "Invalid Clientcode" : statusData.message}}
+              {{ statusData && statusData.message && statusData.message == 'Processing ..' ? "Invalid parameters" : statusData.message}}
             </div>
             <div
               v-if="
@@ -327,7 +327,7 @@ export default {
     return {
       payload: {
         branchcode: "",
-        clientcode: "",
+        Employeecode: "",
         subject: "",
         text: "",
         department: "",
@@ -357,7 +357,7 @@ export default {
 isCreateButtonDisabled() {
       // Check if any of the fields are empty
       return !this.payload ||
-             !this.payload.clientcode ||
+            //  !this.payload.clientcode ||
              !this.payload.subject ||
              !this.payload.text || !this.departmentIndex || !this.selectedSubCategory;
     },},
@@ -413,15 +413,15 @@ isCreateButtonDisabled() {
       formData.append("text", this.payload.text);
       formData.append("subCat", this.selectedSubCategory);
       formData.append("branchCode", this.branchCode);
-      formData.append("clientcode", this.payload.clientcode);
-      formData.append("createdBy", "BRANCH");
+       formData.append("empcode", this.payload.Employeecode);
+      // formData.append("createdBy", "BRANCH");
 
       formData.append("attachment", this.attachment);
       formData.append("filename", this.selectedFileName);
 
       try {
         const response = await axios.post(
-          "https://g1.gwcindia.in/ticket-api/create-ticket.php",
+          "https://g1.gwcindia.in/ticket-api/create-ticket-br-emp.php",
           formData
         );
         console.log("hello2");
@@ -444,17 +444,16 @@ this.selectedCategory=null;
     },
 
     async branchFetchTickets() {
-      const branchcode = localStorage.getItem("branchCode");
+   const branchcode = localStorage.getItem("branchCode");
+        
       try {
-        const response = await axios.get(
-          `https://g1.gwcindia.in/ticket-api/open-tickets.php`,
-          {
-            params: {
-              branchCode: branchcode,
-              createdBy: "BRANCH",
-            },
-          }
-        );
+      const response = await axios.get(`https://g1.gwcindia.in/ticket-api/br-emp-tickets.php`, {
+    params: {
+      ticket_status: "open",
+      createdBy: this.$route.query.empId ? "EMPLOYEE":"BRANCH-EMP",
+     usercode:this.$route.query.empId ? this.$route.query.empId : branchcode
+    }
+  });
         if (response != undefined) {
           this.tickets = response.data;
 

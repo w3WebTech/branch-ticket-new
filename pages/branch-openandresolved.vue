@@ -92,6 +92,9 @@ export default {
     const branchCode = this.$route.query.branchcode
       ? this.$route.query.branchcode
       : "CAD";
+         const empId = this.$route.query.empId
+      ? this.$route.query.empId
+      : "";
     // Do something with clientCode and clientName
     // this.clientCode = "GZ10219";
     // this.clientName = "RAJA ESWARAN";
@@ -100,6 +103,7 @@ export default {
     localStorage.setItem("clientname", clientName);
     localStorage.setItem("clientcode", clientCode);
     localStorage.setItem("branchCode", branchCode);
+    localStorage.setItem("empId", empId);
     await this.branchFetchTickets(); // Fetch branch ticket data
     await this.branchResolvedFetchTickets(); // Fetch branch resolved ticket data
     this.loading = false; // Set loading to false after data is fetched
@@ -108,11 +112,13 @@ export default {
    
     async branchFetchTickets() {
        const branchcode = localStorage.getItem("branchCode");
+        
       try {
-      const response = await axios.get(`https://g1.gwcindia.in/ticket-api/open-tickets.php`, {
+      const response = await axios.get(`https://g1.gwcindia.in/ticket-api/br-emp-tickets.php`, {
     params: {
-      branchCode: branchcode,
-      createdBy: "BRANCH"
+      ticket_status: "open",
+      createdBy: this.$route.query.empId ? "EMPLOYEE":"BRANCH-EMP",
+     usercode:this.$route.query.empId ? this.$route.query.empId : branchcode
     }
   });
 
@@ -126,10 +132,11 @@ export default {
       try {
        const branchcode = localStorage.getItem("branchCode");
 
-          const response = await axios.get(`https://g1.gwcindia.in/ticket-api/resolved-tickets.php`, {
+          const response = await axios.get(`https://g1.gwcindia.in/ticket-api/br-emp-tickets.php`, {
  params: {
-      branchCode: branchcode,
-      createdBy: "BRANCH"
+           ticket_status: "closed",
+      createdBy:this.$route.query.empId ? "EMPLOYEE":"BRANCH-EMP",
+      usercode:this.$route.query.empId ? this.$route.query.empId : branchcode
     }
   });
 

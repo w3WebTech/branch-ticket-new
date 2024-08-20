@@ -101,13 +101,15 @@ export default {
   },
   methods: {
     
-    async branchFetchTickets() {
+   async branchFetchTickets() {
        const branchcode = localStorage.getItem("branchCode");
+        
       try {
-      const response = await axios.get(`https://g1.gwcindia.in/ticket-api/open-tickets.php`, {
+      const response = await axios.get(`https://g1.gwcindia.in/ticket-api/br-emp-tickets.php`, {
     params: {
-      branchCode: branchcode,
-      createdBy: "BRANCH"
+      ticket_status: "open",
+      createdBy: this.$route.query.empId ? "EMPLOYEE":"BRANCH-EMP",
+     usercode:this.$route.query.empId ? this.$route.query.empId : branchcode
     }
   });
 

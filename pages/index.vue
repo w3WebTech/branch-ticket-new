@@ -19,6 +19,9 @@ export default {
     const branchCode = this.$route.query.branchcode
       ? this.$route.query.branchcode
       : "CAD";
+       const empId = this.$route.query.empId
+      ? this.$route.query.empId
+      : "";
     // Do something with clientCode and clientName
     // this.clientCode = "GZ10219";
     // this.clientName = "RAJA ESWARAN";
@@ -27,6 +30,7 @@ export default {
     localStorage.setItem("clientname", clientName);
     localStorage.setItem("clientcode", clientCode);
     localStorage.setItem("branchCode", branchCode);
+      localStorage.setItem("empId", empId);
     this.$router.push("/home");
     console.log(localStorage.getItem("branchCode"), "branchCode");
     console.log("Client Code:", clientCode);
