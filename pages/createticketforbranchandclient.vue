@@ -9,34 +9,30 @@
        <div class="container md:w-[90%] md:mx-auto bg-[#eeeff4] md:bg-white pt-10">
         <div class="overflow-x-auto">
             <div class="flex space-x-8 px-2">
+                <!-- Your existing tab buttons -->
+
+                <!-- Tab 1: Create Ticket -->
+                <div @click="getTabId(3)"
+                    :class="['px-4 py-3 text-sm cursor-pointer whitespace-nowrap', setTab === 3 ? 'border-b-2 border-blue-600 font-bold text-blue-600 animate-bounce' : 'text-blue-600 hover:border-b-2 hover:border-blue-600 hover:font-bold']">
+                    Create Ticket
+                </div>
+
+                <!-- Tab 2: Client Open Tickets -->
            
-            
 
                 <!-- Tab 4: Branch Open Tickets -->
-                <div @click="getTabId(4)"
-                    :class="['px-4 py-3 text-sm cursor-pointer whitespace-nowrap', setTab === 4 ? 'border-b-2 border-blue-600 font-bold text-blue-600 animate-bounce' : 'text-blue-600 hover:border-b-2 hover:border-blue-600 hover:font-bold']">
-                   Branch / Emp Open Tickets ({{ branchTicketData.count }})
-                </div>
-
-                <!-- Tab 5: Branch Resolved Tickets -->
-                <div @click="getTabId(5)"
-                    :class="['px-4 py-3 text-sm cursor-pointer whitespace-nowrap', setTab === 5 ? 'border-b-2 border-blue-600 font-bold text-blue-600 animate-bounce' : 'text-blue-600 hover:border-b-2 hover:border-blue-600 hover:font-bold']">
-                 Branch / Emp Resolved Tickets ({{ branchTicketDataResolved.count }})
-                </div>
+                
             </div>
         </div>
 
         <!-- Content Section with Animation -->
         <transition name="slide">
             <div class="pt-[15px] pb-14">
-               
-               
-                <div v-if="setTab === 4" class="animate-slide animate-bounce">
-                    <branchTickets :ticketData="branchTicketData" />
+              
+            <div v-if="setTab === 3" class="animate-slide animate-bounce">
+                    <createticket-branchandclient @go-to-home="goBackFunc" />
                 </div>
-                <div v-if="setTab === 5" class="animate-slide animate-bounce">
-                    <branchResolvedTicket :ticketData="branchTicketDataResolved" />
-                </div>
+              
             </div>
         </transition>
     </div>
@@ -73,14 +69,14 @@ export default {
       resolvedTickets: [],
       branchTicketData: { count: 0 }, // Initial empty state for branch ticket data
       branchTicketDataResolved: { count: 0 }, // Initial empty state for branch resolved ticket data
-      setTab: 4, // Default tab to be shown
+      setTab: 3, // Default tab to be shown
       isCreate: false,
       username: null,
       emailId: null,
     };
   },
   async mounted() {
-       const clientCode = this.$route.query.clientcode
+   const clientCode = this.$route.query.clientcode
       ? this.$route.query.clientcode
       : "GZ10219";
     const clientName = this.$route.query.clientname
@@ -92,9 +88,6 @@ export default {
     const branchCode = this.$route.query.branchcode
       ? this.$route.query.branchcode
       : "CAD";
-         const empId = this.$route.query.empId
-      ? this.$route.query.empId
-      : "";
     // Do something with clientCode and clientName
     // this.clientCode = "GZ10219";
     // this.clientName = "RAJA ESWARAN";
@@ -103,22 +96,18 @@ export default {
     localStorage.setItem("clientname", clientName);
     localStorage.setItem("clientcode", clientCode);
     localStorage.setItem("branchCode", branchCode);
-    localStorage.setItem("empId", empId);
-    await this.branchFetchTickets(); // Fetch branch ticket data
-    await this.branchResolvedFetchTickets(); // Fetch branch resolved ticket data
+
     this.loading = false; // Set loading to false after data is fetched
   },
   methods: {
-   
+    
     async branchFetchTickets() {
        const branchcode = localStorage.getItem("branchCode");
-        
       try {
-      const response = await axios.get(`https://g1.gwcindia.in/ticket-api/br-emp-tickets.php`, {
+      const response = await axios.get(`https://g1.gwcindia.in/ticket-api/open-tickets.php`, {
     params: {
-      ticket_status: "open",
-      createdBy: this.$route.query.empId ? "EMPLOYEE":"BRANCH-EMP",
-     usercode:this.$route.query.empId ? this.$route.query.empId : branchcode
+      branchCode: branchcode,
+      createdBy: "BRANCH"
     }
   });
 
@@ -132,11 +121,10 @@ export default {
       try {
        const branchcode = localStorage.getItem("branchCode");
 
-          const response = await axios.get(`https://g1.gwcindia.in/ticket-api/br-emp-tickets.php`, {
+          const response = await axios.get(`https://g1.gwcindia.in/ticket-api/resolved-tickets.php`, {
  params: {
-           ticket_status: "closed",
-      createdBy:this.$route.query.empId ? "EMPLOYEE":"BRANCH-EMP",
-      usercode:this.$route.query.empId ? this.$route.query.empId : branchcode
+      branchCode: branchcode,
+      createdBy: "BRANCH"
     }
   });
 
